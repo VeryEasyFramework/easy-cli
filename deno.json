@@ -13,7 +13,7 @@
       "README.md",
       "LICENSE"
     ],
-    "ignore": [
+    "exclude": [
       "dev.ts"
     ]
   },
