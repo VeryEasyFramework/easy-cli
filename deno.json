@@ -9,7 +9,9 @@
   "publish": {
     "include": [
       "mod.ts",
-      "src"
+      "src/**/*.ts",
+      "README.md",
+      "LICENSE"
     ]
   },
   "tasks": {
