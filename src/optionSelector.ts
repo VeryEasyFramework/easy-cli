@@ -12,12 +12,13 @@ const keyMap = {
 const reverseKeyMap = Object.fromEntries(
   Object.entries(keyMap).map(([key, value]) => [value, key]),
 );
-export type SelectorOption<T> = {
-  name: string;
+
+export interface SelectorOption<T> {
+  name: string; // The name of the option
   id: T;
   description: string;
-  action?: (...args: any) => Promise<void> | void;
-};
+  action?: () => Promise<void> | void;
+}
 
 /**
  * A simple CLI option selector that prompts the user to select an option from a list.
@@ -32,7 +33,7 @@ export class OptionSelector<T extends PropertyKey> {
     this.currentOption = 0;
   }
 
-  async selectOption(): Promise<T> {
+  async prompt(): Promise<T> {
     console.clear();
     const options = this.options.map((option, index) => {
       const out = `${index + 1}. # ${option.name}`;
@@ -55,7 +56,7 @@ export class OptionSelector<T extends PropertyKey> {
           this.currentOption = this.options.length - 1;
         }
         input.releaseLock();
-        await this.selectOption();
+        await this.prompt();
         break;
       case keyMap.down:
         this.currentOption += 1;
@@ -63,7 +64,7 @@ export class OptionSelector<T extends PropertyKey> {
           this.currentOption = 0;
         }
         input.releaseLock();
-        await this.selectOption();
+        await this.prompt();
         break;
       // case keyMap.left:
       //   break;
@@ -76,7 +77,7 @@ export class OptionSelector<T extends PropertyKey> {
         break;
       default:
         input.releaseLock();
-        await this.selectOption();
+        await this.prompt();
         break;
     }
     console.clear();

@@ -6,7 +6,7 @@ export type PrompterOption<T> = {
   message: string;
   key: T;
   default?: string;
-  action: (...args: any) => void;
+  // action: (...args: any) => void;
 };
 
 export class Prompter<T extends PropertyKey> {
@@ -43,7 +43,7 @@ export class Prompter<T extends PropertyKey> {
 }
 
 /**
- * A simple CLI prompter that prompts the user to enter data for a list of fields.
+ * A CLI prompter that prompts the user to enter data for a list of fields.
  * Includes support for required fields, default values, and custom data types.
  */
 export class CliPrompter {

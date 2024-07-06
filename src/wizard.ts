@@ -24,7 +24,7 @@ export const createWizard = (input: WizardInput) => {
         switch (step.type) {
           case "selector":
             console.log("selector");
-            await new OptionSelector(step.selectorOptions!).selectOption();
+            await new OptionSelector(step.selectorOptions!).prompt();
             break;
           case "prompt":
             console.log("prompt");
