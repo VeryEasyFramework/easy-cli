@@ -51,7 +51,7 @@ export class EasyCli {
   public async run(): Promise<void> {
     if (!this.mainMenu.menuItems.length) {
       console.error(
-        colorMe.red("Oops! You need to add at least one menu item! Exiting..."),
+        colorMe.red("Oops! You need to add at least one menu item. Exiting..."),
       );
       Deno.exit();
     }
