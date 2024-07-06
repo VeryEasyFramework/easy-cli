@@ -1,5 +1,8 @@
 # Easy CLI
 
+A simple CLI library for Deno that allows you to create an interactive CLI
+application with ease.
+
 ## Installation
 
 ```bash
