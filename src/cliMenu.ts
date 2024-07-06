@@ -46,14 +46,6 @@ export class CliMenu {
       );
       return;
     }
-
-    // this.onBack(
-    //   {
-    //     title: options.backTitle || "Exit",
-    //     description: options.backDescription || "Quit the application",
-    //     action: this.goBack,
-    //   },
-    // );
   }
 
   get menuHeader(): string {
