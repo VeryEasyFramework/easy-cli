@@ -19,6 +19,10 @@ export type SelectorOption<T> = {
   action?: (...args: any) => Promise<void> | void;
 };
 
+/**
+ * A simple CLI option selector that prompts the user to select an option from a list.
+ * Returns the id of the selected option.
+ */
 export class OptionSelector<T extends PropertyKey> {
   options: SelectorOption<T>[];
   currentOption: number = 0;

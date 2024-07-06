@@ -42,6 +42,10 @@ export class Prompter<T extends PropertyKey> {
   }
 }
 
+/**
+ * A simple CLI prompter that prompts the user to enter data for a list of fields.
+ * Includes support for required fields, default values, and custom data types.
+ */
 export class CliPrompter {
   data: Record<string, {
     required: boolean;

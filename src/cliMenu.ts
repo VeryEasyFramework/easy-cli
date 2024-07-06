@@ -12,6 +12,9 @@ const keyMap = {
   ctrlC: "\x03",
 };
 
+/**
+ * A simple CLI menu builder used in the EasyCli class
+ */
 export class CliMenu {
   menuItems: Array<MenuItem>;
   menuName: string = "Menu";

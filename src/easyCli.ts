@@ -6,6 +6,10 @@ import type { ActionMenuItem, SubMenuItem } from "./types.ts";
 async function asyncPause(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * EasyCli is an easy-to-use CLI builder for interactive command-line applications
+ */
 export class EasyCli {
   private mainMenu = new CliMenu("Main Menu");
 
