@@ -66,7 +66,7 @@ export class CliPrompter {
     this.callback = options.onGotData;
   }
 
-  async prompt() {
+  async prompt(): Promise<Record<string, any>> {
     console.clear();
     const renderAnswered = (key: string, value: string) => {
       const param = colorMe.brightCyan(

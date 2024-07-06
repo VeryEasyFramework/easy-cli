@@ -53,11 +53,11 @@ export class CliMenu {
     // );
   }
 
-  get menuHeader() {
+  get menuHeader(): string {
     return this.formattedHeader;
   }
 
-  set menuHeader(value) {
+  set menuHeader(value: string) {
     value = value || this.menuName;
     const filler = cliFormatter.makeFiller("=", value);
     this.formattedHeader = `${filler} ${value} ${filler}`;
