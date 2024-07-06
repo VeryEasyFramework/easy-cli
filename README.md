@@ -1,1 +1,1 @@
-# deno-cli-builder
+# Easy CLI
