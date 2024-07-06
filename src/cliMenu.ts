@@ -1,14 +1,6 @@
 import { colorMe } from "@eveffer/color-me";
 import { cliFormatter } from "./cliUtils.ts";
-
-export interface MenuItem {
-  title: string;
-  description?: string;
-  action?: () => Promise<void | Record<string, any>> | void;
-  returnWhenDone?: boolean;
-  waitAfterAction?: boolean;
-  subMenu?: CliMenu;
-}
+import type { ActionMenuItem, MenuItem, SubMenuItem } from "./types.ts";
 
 const keyMap = {
   up: "\x1b[A",
@@ -21,36 +13,44 @@ const keyMap = {
 };
 
 export class CliMenu {
-  menuItems: MenuItem[];
+  menuItems: Array<MenuItem>;
   menuName: string = "Menu";
   output: string = "";
   private formattedHeader: string = "";
   private goBack: () => Promise<void> | void = Deno.exit;
   private activeItemIndex: number = 0;
-  private goBackItem: MenuItem = {
-    title: "Exit",
-    description: "Quit the application",
-    action: this.goBack,
+  private goBackItem: ActionMenuItem = {
+    title: "Back",
+    description: "Go back to the previous menu",
+    action: () => {},
     returnWhenDone: true,
   };
 
-  constructor(name: string, options: {
-    menuItems?: MenuItem[];
-    onBack?: {
-      title: string;
-      description: string;
-      action: () => Promise<void> | void;
-    };
+  constructor(name: string, options?: {
+    backTitle?: string;
+    backDescription?: string;
   }) {
-    this.menuItems = options.menuItems || [];
+    this.menuItems = [];
     this.menuName = name || "Menu";
-    this.onBack(
-      options.onBack || {
-        title: "Exit",
-        description: "Quit the application",
-        action: this.goBack,
-      },
-    );
+    if (options?.backTitle || options?.backDescription) {
+      this.onBack(
+        {
+          title: options.backTitle || "Back",
+          description: options.backDescription ||
+            "Go back to the previous menu",
+          action: () => {},
+        },
+      );
+      return;
+    }
+
+    // this.onBack(
+    //   {
+    //     title: options.backTitle || "Exit",
+    //     description: options.backDescription || "Quit the application",
+    //     action: this.goBack,
+    //   },
+    // );
   }
 
   get menuHeader() {
@@ -80,8 +80,19 @@ export class CliMenu {
     console.info(content);
   }
 
-  addMenuItem(menuItem: MenuItem) {
-    this.menuItems.push(menuItem);
+  addMenuItem(menuItem: ActionMenuItem) {
+    this.menuItems.push({
+      title: menuItem.title,
+      description: menuItem.description || "",
+      action: menuItem.action,
+      returnWhenDone: menuItem.returnWhenDone || false,
+      waitAfterAction: menuItem.waitAfterAction || false,
+    });
+  }
+  addSubMenu(subMenu: SubMenuItem) {
+    this.menuItems.push({
+      ...subMenu,
+    });
   }
 
   async show() {
@@ -170,7 +181,7 @@ export class CliMenu {
           }
           const result = await action();
           this.output = JSON.stringify(result, null, 2) || "";
-          if (currentItem.waitAfterAction) {
+          if (currentItem?.waitAfterAction) {
             prompt(colorMe.green("Press any key to continue..."));
           }
           if (returnWhenDone) {

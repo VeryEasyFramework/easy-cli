@@ -13,6 +13,10 @@ export class Prompter<T extends PropertyKey> {
   options: PrompterOption<T>[];
   result: Record<T, string> = {} as Record<T, string>;
 
+  /**
+   * Prompts the user to select an option from a list
+   * @param options
+   */
   constructor(options: PrompterOption<T>[]) {
     this.options = options;
   }
@@ -46,6 +50,10 @@ export class CliPrompter {
   }> = {};
   callback?: (data: Record<string, any>) => Promise<void> | void;
 
+  /**
+   * Prompts the user to enter data for a list of fields
+   * @param options
+   */
   constructor(options: {
     data: Record<string, {
       required: boolean;

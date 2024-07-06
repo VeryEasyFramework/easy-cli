@@ -1,27 +1,56 @@
 import { colorMe } from "@eveffer/color-me";
 
-import { CliMenu, type MenuItem } from "./cliMenu.ts";
+import { CliMenu } from "./cliMenu.ts";
+import type { ActionMenuItem, SubMenuItem } from "./types.ts";
 
 async function asyncPause(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 export class EasyCli {
-  mainMenu = new CliMenu("Main Menu", {});
+  private mainMenu = new CliMenu("Main Menu");
 
-  constructor(options?: {
-    menuItems?: MenuItem[];
-    onNavBack?: () => void;
-  }) {
-    for (const item of options?.menuItems || []) {
-      this.mainMenu.addMenuItem(item);
-    }
+  /**
+   * Create a new EasyCli instance
+   * @param title The title of the main menu
+   */
+  constructor(title?: string) {
+    this.mainMenu.menuName = title || "Main Menu";
+
+    this.mainMenu.onBack({
+      title: "Exit",
+      description: "Quit the application",
+      action: () => {
+        Deno.exit();
+      },
+    });
   }
 
-  addMenuItem(menuItem: MenuItem) {
+  /**
+   * Add a menu item to the main menu
+   * @param menuItem
+   */
+  addMenuItem(menuItem: ActionMenuItem) {
     this.mainMenu.addMenuItem(menuItem);
   }
 
+  /**
+   * Add a submenu to the main menu
+   * @param subMenu
+   */
+  addSubMenu(subMenu: SubMenuItem) {
+    this.mainMenu.addSubMenu(subMenu);
+  }
+
+  /**
+   * Run the CLI
+   */
   public async run(): Promise<void> {
+    if (!this.mainMenu.menuItems.length) {
+      console.error(
+        colorMe.red("Oops! You need to add at least one menu item! Exiting..."),
+      );
+      Deno.exit();
+    }
     try {
       await asyncPause(500);
       await this.mainMenu.show();

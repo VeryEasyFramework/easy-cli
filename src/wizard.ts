@@ -17,7 +17,7 @@ interface WizardInput {
  * @returns
  */
 
-const createWizard = (input: WizardInput) => {
+export const createWizard = (input: WizardInput) => {
   return {
     async start() {
       for (const step of input.steps) {
