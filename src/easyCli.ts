@@ -13,10 +13,6 @@ async function asyncPause(ms: number) {
 export class EasyCli {
   private mainMenu = new CliMenu("Main Menu");
 
-  /**
-   * Create a new EasyCli instance
-   * @param title The title of the main menu
-   */
   constructor(title?: string) {
     this.mainMenu.menuName = title || "Main Menu";
 
@@ -31,7 +27,6 @@ export class EasyCli {
 
   /**
    * Add a menu item to the main menu
-   * @param menuItem
    */
   addMenuItem(menuItem: ActionMenuItem) {
     this.mainMenu.addMenuItem(menuItem);
@@ -39,7 +34,6 @@ export class EasyCli {
 
   /**
    * Add a submenu to the main menu
-   * @param subMenu
    */
   addSubMenu(subMenu: SubMenuItem) {
     this.mainMenu.addSubMenu(subMenu);

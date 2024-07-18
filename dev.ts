@@ -1,7 +1,11 @@
-import { CliPrompter, EasyCli, OptionSelector } from "./mod.ts";
-import { CliMenu } from "./src/cliMenu.ts";
-import { Prompter } from "./src/prompter.ts";
-import { createWizard } from "./src/wizard.ts";
+import {
+  CliMenu,
+  createWizard,
+  EasyCli,
+  ObjectPrompter,
+  OptionSelector,
+  TypedObjectPrompter,
+} from "./mod.ts";
 
 function easyCliDemo() {
   const easyCli = new EasyCli("My CLI App");
@@ -9,6 +13,9 @@ function easyCliDemo() {
   easyCli.addMenuItem({
     title: "Sample Menu Item",
     description: "This is a sample menu item",
+    action: () => {
+      console.log("This is a sample menu item");
+    },
     waitAfterAction: true,
   });
   easyCli.addSubMenu({
@@ -19,11 +26,12 @@ function easyCliDemo() {
   easyCli.run();
 }
 function prompterDemo() {
-  const prompter = new Prompter(
+  const prompter = new ObjectPrompter(
     [
       {
         key: "name",
         message: "What is your name?",
+        default: "John Doe",
       },
       {
         key: "age",
@@ -37,6 +45,7 @@ function prompterDemo() {
     ],
   );
   const result = prompter.prompt();
+
   console.log({ result });
 }
 
@@ -58,13 +67,29 @@ function cliPrompterDemo() {
   // const prompter = new CliPrompter({});
 }
 
+async function typedPrompterDemo() {
+  const prompter = new TypedObjectPrompter({
+    fields: [
+      {
+        key: "name",
+        message: "What is your name?",
+        type: "string",
+        required: true,
+      },
+    ],
+  });
+  const result = await prompter.prompt();
+
+  console.log(result);
+}
+
 function wizardDemo() {
   // const wizard = createWizard();
 }
 if (import.meta.main) {
   easyCliDemo();
-  prompterDemo();
-  await optionSelectorDemo();
-  cliPrompterDemo();
-  wizardDemo();
+  // prompterDemo();
+  // await optionSelectorDemo();
+  // cliPrompterDemo();
+  // wizardDemo();
 }

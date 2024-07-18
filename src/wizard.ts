@@ -1,10 +1,10 @@
+import { type FieldKeyOption, ObjectPrompter } from "./objectPrompter.ts";
 import { OptionSelector, type SelectorOption } from "./optionSelector.ts";
-import { Prompter, type PrompterOption } from "./prompter.ts";
 
 interface WizardStep {
   type: "prompt" | "selector";
   selectorOptions?: SelectorOption<string>[];
-  promptOptions?: PrompterOption<string>[];
+  promptOptions?: FieldKeyOption<string>[];
 }
 
 interface WizardInput {
@@ -13,8 +13,6 @@ interface WizardInput {
 
 /**
  * Work in progress!!
- * @param input
- * @returns
  */
 
 export const createWizard = (input: WizardInput) => {
@@ -32,7 +30,7 @@ export const createWizard = (input: WizardInput) => {
         }
         if (step.type === "selector") {
         } else if (step.type === "prompt") {
-          const prompter = new Prompter(step.promptOptions!);
+          const prompter = new ObjectPrompter(step.promptOptions!);
           prompter.prompt();
         }
       }
