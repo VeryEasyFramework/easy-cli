@@ -15,7 +15,9 @@ interface WizardInput {
  * Work in progress!!
  */
 
-export const createWizard = (input: WizardInput) => {
+export const createWizard = (input: WizardInput): {
+  start: () => Promise<void>;
+} => {
   return {
     async start() {
       for (const step of input.steps) {

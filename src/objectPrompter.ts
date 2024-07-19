@@ -15,7 +15,7 @@ export class ObjectPrompter<T extends PropertyKey> {
     this.keys = keys;
   }
 
-  prompt() {
+  prompt(): Record<T, string> {
     console.clear();
     for (const key of this.keys) {
       const defaultText = key.default ? `(${colorMe.yellow(key.default)})` : "";
