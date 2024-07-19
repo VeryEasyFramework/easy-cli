@@ -86,16 +86,24 @@ console.log(response);
 
 This will prompt the user with the following questions:
 
+<span>
 <img src="docs/images/op1.png" width="300">
+</span>
+<span>
 <img src="docs/images/op6.png" width="300">
+</span>
+<span>
 <img src="docs/images/op2.png" width="300">
-
+</span>
+<span>
 <img src="docs/images/op3.png" width="300">
-
+</span>
+<span>
 <img src="docs/images/op4.png" width="300">
-
+</span>
+<span>
 <img src="docs/images/op5.png" width="300">
-
+</span>
 And the response will be:
 
 ```json
