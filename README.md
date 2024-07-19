@@ -104,6 +104,7 @@ This will prompt the user with the following questions:
 <span>
 <img src="docs/images/op5.png" width="300">
 </span>
+
 And the response will be:
 
 ```json
