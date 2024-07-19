@@ -43,7 +43,7 @@ if (import.meta.main) {
 ### TypedObjectPrompter
 
 ```typescript
-import { EasyCLI } from "@eveffer/easy-cli";
+import { TypedObjectPrompter } from "@eveffer/easy-cli";
 
 const prompter = new TypedObjectPrompter({
   fields: [
