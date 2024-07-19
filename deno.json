@@ -19,6 +19,6 @@
     ]
   },
   "tasks": {
-    "dev": "deno run --watch dev.ts"
+    "dev": "deno run --allow-all --watch dev.ts"
   }
 }

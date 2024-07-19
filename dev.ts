@@ -6,6 +6,7 @@ import {
   OptionSelector,
   TypedObjectPrompter,
 } from "./mod.ts";
+import { runCommand } from "./src/runCommand.ts";
 
 function easyCliDemo() {
   const easyCli = new EasyCli("My CLI App");
@@ -16,7 +17,17 @@ function easyCliDemo() {
     action: () => {
       console.log("This is a sample menu item");
     },
+
     waitAfterAction: true,
+  });
+  easyCli.addMenuItem({
+    title: "list files",
+    description: "list files in the current directory",
+
+    action: async () => {
+      const response = await runCommand("ls");
+      return response.stdout;
+    },
   });
   easyCli.addSubMenu({
     title: "Sample Sub Menu",
@@ -111,6 +122,7 @@ function wizardDemo() {
   // const wizard = createWizard();
 }
 if (import.meta.main) {
-  // easyCliDemo();
-  typedPrompterDemo();
+  easyCliDemo();
+  // typedPrompterDemo();
+  // await runCommand("python3");
 }

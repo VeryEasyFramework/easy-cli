@@ -1,6 +1,6 @@
 import { colorMe } from "@eveffer/color-me";
 import { cliFormatter } from "./cliUtils.ts";
-import type { ActionMenuItem, MenuItem, SubMenuItem } from "./types.ts";
+import type { Action, ActionMenuItem, MenuItem, SubMenuItem } from "./types.ts";
 
 const keyMap = {
   up: "\x1b[A",
@@ -61,7 +61,7 @@ export class CliMenu {
   onBack(options: {
     title: string;
     description: string;
-    action: () => Promise<void> | void;
+    action: Action;
   }) {
     this.goBackItem = {
       title: options.title,
@@ -175,7 +175,20 @@ export class CliMenu {
             this.print(`Running action: ${currentItem.title}...\n\n`);
           }
           const result = await action();
-          this.output = JSON.stringify(result, null, 2) || "";
+          switch (typeof result) {
+            case "string":
+              this.output = result;
+              break;
+            case "object":
+              this.output = JSON.stringify(result, null, 2);
+              break;
+            case "number":
+              this.output = result.toString();
+              break;
+            default:
+              this.output = "";
+              break;
+          }
           if (currentItem?.waitAfterAction) {
             prompt(colorMe.green("Press any key to continue..."));
           }
