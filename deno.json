@@ -1,6 +1,6 @@
 {
   "name": "@eveffer/easy-cli",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "exports": "./mod.ts",
   "imports": {
     "@eveffer/color-me": "jsr:@eveffer/color-me@^0.1.2",
@@ -10,6 +10,7 @@
     "include": [
       "mod.ts",
       "src/**/*.ts",
+      "docs",
       "README.md",
       "LICENSE"
     ],
