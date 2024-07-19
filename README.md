@@ -11,6 +11,8 @@ deno add @eveffer/easy-cli
 
 ## Usage
 
+### EasyCLI
+
 ```typescript
 import { EasyCLI } from "@eveffer/easy-cli";
 
@@ -38,8 +40,74 @@ if (import.meta.main) {
 }
 ```
 
-## EasyCLI
+### TypedObjectPrompter
 
-## CliPrompter
+```typescript
+import { EasyCLI } from "@eveffer/easy-cli";
 
-## OptionSelector
+const prompter = new TypedObjectPrompter({
+  fields: [
+    {
+      key: "name",
+      message: "What is your name?",
+      type: "string",
+      required: true,
+    },
+    {
+      key: "age",
+      message: "How old are you?",
+      type: "number",
+    },
+    {
+      key: "email",
+      message: "What is your email?",
+      type: "string",
+      defaultValue: "example@example.com",
+    },
+    {
+      key: "isStudent",
+      message: "Are you a student?",
+      type: "boolean",
+      required: true,
+    },
+    {
+      key: "hobbies",
+      message: "What are your hobbies?",
+      type: "array",
+      required: true,
+    },
+  ],
+});
+
+const response = await prompter.prompt();
+
+console.log(response);
+```
+
+This will prompt the user with the following questions:
+
+<img src="docs/images/op1.png" width="300">
+<img src="docs/images/op6.png" width="300">
+<img src="docs/images/op2.png" width="300">
+
+<img src="docs/images/op3.png" width="300">
+
+<img src="docs/images/op4.png" width="300">
+
+<img src="docs/images/op5.png" width="300">
+
+And the response will be:
+
+```json
+{
+  "name": "John",
+  "age": 25,
+  "email": "john@example.com",
+  "isStudent": true,
+  "hobbies": ["Reading", "Coding"]
+}
+```
+
+### ObjectPrompter
+
+### OptionSelector

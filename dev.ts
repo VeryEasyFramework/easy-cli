@@ -76,9 +76,33 @@ async function typedPrompterDemo() {
         type: "string",
         required: true,
       },
+      {
+        key: "age",
+        message: "How old are you?",
+        type: "number",
+      },
+      {
+        key: "email",
+        message: "What is your email?",
+        type: "string",
+        defaultValue: "example@example.com",
+      },
+      {
+        key: "isStudent",
+        message: "Are you a student?",
+        type: "boolean",
+        required: true,
+      },
+      {
+        key: "hobbies",
+        message: "What are your hobbies?",
+        type: "array",
+        required: true,
+      },
     ],
   });
   const result = await prompter.prompt();
+  const age = result.age;
 
   console.log(result);
 }
@@ -87,9 +111,6 @@ function wizardDemo() {
   // const wizard = createWizard();
 }
 if (import.meta.main) {
-  easyCliDemo();
-  // prompterDemo();
-  // await optionSelectorDemo();
-  // cliPrompterDemo();
-  // wizardDemo();
+  // easyCliDemo();
+  typedPrompterDemo();
 }
