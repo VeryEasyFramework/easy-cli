@@ -7,6 +7,7 @@ import {
   TypedObjectPrompter,
 } from "./mod.ts";
 import { runCommand } from "./src/runCommand.ts";
+import { SearchableList } from "./src/searchableList.ts";
 
 function easyCliDemo() {
   const easyCli = new EasyCli("My CLI App");
@@ -69,8 +70,12 @@ async function optionSelectorDemo() {
     name: "Option 2",
     description: "This is option 2",
     id: 2,
+  }, {
+    name: "Option 3",
+    description: "This is option 3",
+    id: 3,
   }]);
-  const result = await selector.prompt();
+  const result = await selector.run();
   console.log(result);
 }
 
@@ -118,11 +123,19 @@ async function typedPrompterDemo() {
   console.log(result);
 }
 
+async function searchableListDemo() {
+  const list = new SearchableList(["apple", "watermelon", "banana", "cherry"]);
+  const result = await list.run();
+  console.log(result);
+}
+
 function wizardDemo() {
   // const wizard = createWizard();
 }
 if (import.meta.main) {
-  easyCliDemo();
+  searchableListDemo();
+  // easyCliDemo();
   // typedPrompterDemo();
+  // optionSelectorDemo();
   // await runCommand("python3");
 }

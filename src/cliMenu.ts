@@ -1,16 +1,7 @@
 import { colorMe } from "@eveffer/color-me";
-import { cliFormatter } from "./cliUtils.ts";
+import { keyMap } from "./cliUtils.ts";
 import type { Action, ActionMenuItem, MenuItem, SubMenuItem } from "./types.ts";
-
-const keyMap = {
-  up: "\x1b[A",
-  down: "\x1b[B",
-  left: "\x1b[D",
-  right: "\x1b[C",
-  enter: "\r",
-  escape: "\x1b",
-  ctrlC: "\x03",
-};
+import { center } from "./utils/format.ts";
 
 /**
  * A simple CLI menu builder used in the EasyCli class
@@ -54,8 +45,8 @@ export class CliMenu {
 
   set menuHeader(value: string) {
     value = value || this.menuName;
-    const filler = cliFormatter.makeFiller("=", value);
-    this.formattedHeader = `${filler} ${value} ${filler}`;
+
+    this.formattedHeader = center(value, "=");
   }
 
   onBack(options: {
