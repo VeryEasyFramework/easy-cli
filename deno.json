@@ -3,7 +3,7 @@
   "version": "0.1.6",
   "exports": "./mod.ts",
   "imports": {
-    "@eveffer/color-me": "jsr:@eveffer/color-me@^0.1.2",
+    "@eveffer/color-me": "jsr:@eveffer/color-me@^0.1.4",
     "@eveffer/string-utils": "jsr:@eveffer/string-utils@^0.1.2"
   },
   "publish": {

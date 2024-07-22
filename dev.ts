@@ -6,6 +6,7 @@ import {
   OptionSelector,
   TypedObjectPrompter,
 } from "./mod.ts";
+import { listenForInput, printTime } from "./src/cliUtils.ts";
 import { runCommand } from "./src/runCommand.ts";
 import { SearchableList } from "./src/searchableList.ts";
 
@@ -133,7 +134,14 @@ function wizardDemo() {
   // const wizard = createWizard();
 }
 if (import.meta.main) {
-  searchableListDemo();
+  // searchableListDemo();
+  let inputString = "";
+  listenForInput((char) => {
+    inputString += char;
+  });
+  printTime(() => {
+    return inputString;
+  });
   // easyCliDemo();
   // typedPrompterDemo();
   // optionSelectorDemo();

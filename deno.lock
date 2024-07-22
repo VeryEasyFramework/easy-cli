@@ -2,12 +2,12 @@
   "version": "3",
   "packages": {
     "specifiers": {
-      "jsr:@eveffer/color-me@^0.1.2": "jsr:@eveffer/color-me@0.1.2",
+      "jsr:@eveffer/color-me@^0.1.4": "jsr:@eveffer/color-me@0.1.4",
       "jsr:@eveffer/string-utils@^0.1.2": "jsr:@eveffer/string-utils@0.1.2"
     },
     "jsr": {
-      "@eveffer/color-me@0.1.2": {
-        "integrity": "a2a30211812485439516e281953ba20e494439cd340f2a6fee03b9cf91771632"
+      "@eveffer/color-me@0.1.4": {
+        "integrity": "24faebf18adeab9f2bbe11705ef1b0ba4bceb5cbae173c9cfa9f6403e09e263b"
       },
       "@eveffer/string-utils@0.1.2": {
         "integrity": "07fb8232f8cd7c3ef9c975bfc01fe780f2e057a082d59c2f152087d006ecef1a"
@@ -17,7 +17,7 @@
   "remote": {},
   "workspace": {
     "dependencies": [
-      "jsr:@eveffer/color-me@^0.1.2",
+      "jsr:@eveffer/color-me@^0.1.4",
       "jsr:@eveffer/string-utils@^0.1.2"
     ]
   }

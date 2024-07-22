@@ -84,4 +84,35 @@ export function asyncPause(duration = 100) {
   return new Promise((resolve) => setTimeout(resolve, duration));
 }
 
+export async function printTime(prefix: () => string) {
+  while (true) {
+    const date = new Date();
+    const time = date.toLocaleTimeString();
+    console.clear();
+    if (prefix) {
+      console.log(prefix());
+    }
+    console.log(time);
+    await asyncPause(10);
+  }
+}
+
+export function listenForInput(callback: (key: string) => void) {
+  hideCursor();
+  Deno.stdin.setRaw(true);
+  const input = Deno.stdin.readable.getReader();
+  input.read().then(async function processInput({ value, done }) {
+    if (done) {
+      return;
+    }
+    const key = value ? new TextDecoder().decode(value) : "";
+    if (key === keyMap.ctrlC) {
+      showCursor();
+      Deno.exit();
+    }
+    callback(key);
+    input.read().then(processInput);
+  });
+}
+
 export { hideCursor, keyMap, navigateList, showCursor };
