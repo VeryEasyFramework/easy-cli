@@ -8,6 +8,9 @@ const keyMap = {
   backspace: "\x7f",
   ctrlC: "\x03",
   block: "\u2588",
+  ctrlB: "\x02",
+  ctrlI: "\x09",
+  ctrlU: "\x15",
 };
 
 function hideCursor() {

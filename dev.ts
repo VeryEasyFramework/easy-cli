@@ -135,15 +135,16 @@ function wizardDemo() {
 }
 if (import.meta.main) {
   // searchableListDemo();
-  let inputString = "";
-  listenForInput((char) => {
-    inputString += char;
-  });
-  printTime(() => {
-    return inputString;
-  });
+  // let inputString = "";
+  // listenForInput((char) => {
+  //   inputString += char;
+  // });
+  // printTime(() => {
+  //   return inputString;
+  // });
   // easyCliDemo();
+  // prompterDemo();
   // typedPrompterDemo();
-  // optionSelectorDemo();
+  optionSelectorDemo();
   // await runCommand("python3");
 }
