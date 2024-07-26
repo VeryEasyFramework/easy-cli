@@ -9,6 +9,7 @@ import {
 import { listenForInput, printTime } from "./src/cliUtils.ts";
 import { runCommand } from "./src/runCommand.ts";
 import { SearchableList } from "./src/searchableList.ts";
+import { listenerDemo } from "./src/utils/inputListener.ts";
 
 function easyCliDemo() {
   const easyCli = new EasyCli("My CLI App");
@@ -125,16 +126,37 @@ async function typedPrompterDemo() {
 }
 
 async function searchableListDemo() {
-  const list = new SearchableList(["apple", "watermelon", "banana", "cherry"]);
+  const words = generateWordList(100);
+  const list = new SearchableList(words);
   const result = await list.run();
   console.log(result);
+}
+
+let count = 7;
+function generateRandomWord() {
+  if (count == 7) {
+    count = 0;
+  } else {
+    count = 7;
+  }
+
+  return Math.random().toString(36).substring(count);
+}
+
+function generateWordList(length: number) {
+  const words = [];
+  for (let i = 0; i < length; i++) {
+    words.push(`Word ${generateRandomWord()} ${i}`);
+  }
+  return words;
 }
 
 function wizardDemo() {
   // const wizard = createWizard();
 }
 if (import.meta.main) {
-  // searchableListDemo();
+  searchableListDemo();
+  // listenerDemo();
   // let inputString = "";
   // listenForInput((char) => {
   //   inputString += char;
@@ -145,6 +167,6 @@ if (import.meta.main) {
   // easyCliDemo();
   // prompterDemo();
   // typedPrompterDemo();
-  optionSelectorDemo();
+  // optionSelectorDemo();
   // await runCommand("python3");
 }

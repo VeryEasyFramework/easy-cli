@@ -1,10 +1,16 @@
 import { colorMe } from "@eveffer/color-me";
 import { asyncPause } from "./cliUtils.ts";
 import { center } from "./utils/format.ts";
-import { print, println } from "./utils/print.ts";
+import { clearScreen, print, println } from "./utils/print.ts";
+import { RenderEngine } from "./utils/render.ts";
+import { InputListener } from "./utils/inputListener.ts";
 
 export abstract class CLIBase<T> {
   title: string;
+  renderEngine: RenderEngine;
+  listener: InputListener;
+
+  result!: T;
 
   get header() {
     return center(this.title, "=", {
@@ -14,26 +20,48 @@ export abstract class CLIBase<T> {
   }
 
   constructor(title?: string) {
-    this.title = title || "EasyCLI";
+    this.title = title || "Easy CLI";
+    this.renderEngine = new RenderEngine();
+    this.listener = new InputListener();
+    this.setHeader();
   }
 
-  abstract onPrompt(): Promise<void>;
+  setHeader() {
+    this.renderEngine.createElement(this.title, {
+      row: 1,
+      style: {
+        color: "brightCyan",
+        bold: true,
+        underline: true,
+      },
+    });
+  }
+
+  finish() {
+    this.result = this.finalizer();
+    this.listener.on("escape", () => {
+      this.listener.stop();
+    });
+  }
+
   abstract finalizer(): T;
 
-  abstract renderContent(): void;
-  async prompt() {
-    this.render();
-    await this.onPrompt();
-  }
-  render() {
-    console.clear();
-    println(this.header);
-    this.renderContent();
-  }
+  abstract setup(): void;
 
-  async run(): Promise<T> {
-    await asyncPause(500);
-    await this.prompt();
-    return this.finalizer();
+  run() {
+    this.setup();
+    const promise = new Promise<T>((resolve) => {
+      this.listener.onDone(() => {
+        this.renderEngine.stop();
+
+        resolve(this.result);
+        // this.renderEngine.stop();
+      });
+    });
+    this.renderEngine.run();
+
+    this.listener.listen();
+    // await this.prompt();
+    return promise;
   }
 }

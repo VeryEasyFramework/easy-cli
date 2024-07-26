@@ -7,7 +7,46 @@ import { print, println, symbols } from "./utils/print.ts";
 class SearchableList extends CLIBase<string> {
   sourceList: string[];
   filteredList: string[];
-  searchString: string;
+  get searchString(): string {
+    return this._searchString;
+  }
+  set searchString(value: string) {
+    this._searchString = value;
+  }
+
+  get instructions() {
+    const up = colorMe.brightGreen(symbols.upArrowAlt);
+    const down = colorMe.brightGreen(symbols.downArrowAlt);
+    const enter = colorMe.brightGreen(symbols.enter);
+    return `Type to search, ${up} or ${down} to navigate, ${enter} to select`;
+  }
+
+  addInstructions() {
+    const row = 3;
+    const options = {
+      row,
+      style: {
+        color: "brightWhite",
+        bold: true,
+      },
+    } as const;
+    const symbolOptions = {
+      style: {
+        color: "brightGreen",
+        bold: true,
+      },
+      row,
+    } as const;
+    this.renderEngine.createElement("Type to search, ", options);
+    this.renderEngine.createElement(symbols.upArrowAlt, symbolOptions);
+    this.renderEngine.createElement(" or ", options);
+    this.renderEngine.createElement(symbols.downArrowAlt, symbolOptions);
+    this.renderEngine.createElement(" to navigate, ", options);
+    this.renderEngine.createElement(symbols.enter, symbolOptions);
+    this.renderEngine.createElement(" to select", options);
+  }
+  private _searchString: string;
+  searchStringLength: number;
   currentIndex: number;
   action?: (selection: string) => void;
   constructor(
@@ -21,8 +60,9 @@ class SearchableList extends CLIBase<string> {
     this.sourceList = listItems.sort();
     this.filteredList = [];
     this.action = options?.action;
-    this.searchString = "";
+    this._searchString = "";
     this.currentIndex = 0;
+    this.searchStringLength = 0;
     this.search();
   }
   search() {
@@ -38,63 +78,124 @@ class SearchableList extends CLIBase<string> {
     }
   }
 
-  renderContent() {
-    const up = colorMe.brightGreen(symbols.upArrowAlt);
-    const down = colorMe.brightGreen(symbols.downArrowAlt);
-    const enter = colorMe.brightGreen(symbols.enter);
-    println(
-      center(
-        `Type to search, ${up} or ${down} to navigate, ${enter} to select`,
-      ),
-    );
-    println("");
-    println(
-      `${colorMe.brightYellow("Search:")} ${this.searchString}${keyMap.block}`,
-    );
-    println("");
-    this.filteredList.forEach((item, index) => {
-      if (index === this.currentIndex) {
-        println(`${symbols.cursor} ${item}`, "brightMagenta");
-      } else {
-        println(`  ${item}`);
-      }
-    });
-  }
-  select(item: string) {
-    if (this.action) {
-      this.action(item);
-    }
+  getRenderedList() {
+    return this.filteredList.join("\n");
   }
 
   finalizer() {
     const selected = this.filteredList[this.currentIndex];
+    this.renderEngine.rows = [];
+    this.renderEngine.rawElements = [];
+    this.renderEngine.createElement(
+      `Selected: ${selected}`,
+      {
+        row: 5,
+        style: {
+          color: "brightGreen",
+          bold: true,
+        },
+      },
+    );
+    this.renderEngine.createElement("All done, press escape to exit...", {
+      align: "center",
+      row: 7,
+      style: {
+        color: "brightYellow",
+      },
+    });
+
     if (this.action) {
       this.action(selected);
     }
     return selected;
   }
-  async onPrompt() {
-    await navigateList({
-      currentIndex: this.currentIndex,
-      maxOptions: () => this.filteredList.length,
-      onPrompt: () => this.prompt(),
-      onNavigate: (updatedIndex) => {
-        this.currentIndex = updatedIndex;
+  setup(): void {
+    this.renderEngine.createElement("Search: ", {
+      row: 5,
+      style: {
+        color: "brightWhite",
+        bold: true,
       },
-      validateSelection: () => {
-        return this.filteredList.length > 0;
+    });
+    this.renderEngine.createElement(
+      () => this.searchString,
+      {
+        row: 6,
+        style: {
+          color: "brightWhite",
+        },
       },
-      onChar: (char) => {
-        switch (char) {
-          case keyMap.backspace:
-            this.searchString = this.searchString.slice(0, -1);
-            break;
-          default:
-            this.searchString += char;
-            break;
-        }
-        this.search();
+    );
+    // this.addInstructions();
+
+    this.renderEngine.createElement(
+      this.instructions,
+      {
+        row: 3,
+        raw: true,
       },
+    );
+
+    this.renderEngine.createElement(
+      () => {
+        const height = this.renderEngine.height;
+        const offset = 15;
+
+        const listHeight = height - offset;
+        const list = this.filteredList.slice(0, listHeight);
+        const styled = list.map((item, index) => {
+          const selected = this.currentIndex === index;
+
+          if (selected) {
+            return colorMe.brightMagenta(`> ${item}`, {
+              underline: true,
+              bold: true,
+            });
+          }
+          return colorMe.white(`  ${item}`);
+        });
+        return styled;
+      },
+      {
+        row: 7,
+        raw: true,
+        style: {
+          color: "brightWhite",
+        },
+        align: "center",
+      },
+    );
+
+    this.listener.on("up", () => {
+      this.currentIndex -= 1;
+      if (this.currentIndex < 0) {
+        this.currentIndex = this.filteredList.length - 1;
+      }
+    });
+
+    this.listener.on("down", () => {
+      this.currentIndex += 1;
+      if (this.currentIndex >= this.filteredList.length) {
+        this.currentIndex = 0;
+      }
+    });
+    this.listener.on("backspace", () => {
+      this.searchString = this.searchString.slice(0, -1);
+
+      this.search();
+    });
+
+    this.listener.on("enter", () => {
+      this.finish();
+    });
+
+    this.listener.onChar((char) => {
+      this.searchString = this.searchString + char;
+
+      // this.renderEngine.updateElement(searchElementID, {
+      //   content: this.searchString,
+      // });
+      this.search();
     });
   }
 }
