@@ -34,14 +34,14 @@ export abstract class CLIBase<T> {
     });
   }
 
-  finish() {
-    this.result = this.finalizer();
+  async finish(): Promise<void> {
+    this.result = await this.finalizer();
     this.listener.on("escape", () => {
       this.listener.stop();
     });
   }
 
-  abstract finalizer(): T;
+  abstract finalizer(): Promise<T>;
 
   abstract setup(): void;
 

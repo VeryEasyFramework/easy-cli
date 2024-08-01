@@ -6,6 +6,7 @@ import { symbols } from "./utils/print.ts";
 class SearchableList extends CLIBase<string> {
   sourceList: string[];
   filteredList: string[];
+  output: string;
   get searchString(): string {
     return this._searchString;
   }
@@ -47,22 +48,23 @@ class SearchableList extends CLIBase<string> {
   private _searchString: string;
   searchStringLength: number;
   currentIndex: number;
-  action?: (selection: string) => void;
+  action?: (selection: string) => Promise<void>;
   constructor(
     listItems: string[],
     options?: {
       title?: string;
-      action?: (selection: string) => void;
+      action?: (selection: string) => Promise<void> & ThisType<SearchableList>;
     },
   ) {
     super(options?.title || "Searchable List");
     this.sourceList = listItems.sort();
     this.filteredList = [];
-    this.action = options?.action;
+    this.action = options?.action?.bind(this);
     this._searchString = "";
     this.currentIndex = 0;
     this.searchStringLength = 0;
     this.search();
+    this.output = "";
   }
   search() {
     if (this.searchString === "") {
@@ -81,7 +83,7 @@ class SearchableList extends CLIBase<string> {
     return this.filteredList.join("\n");
   }
 
-  finalizer(): string {
+  async finalizer(): Promise<string> {
     const selected = this.filteredList[this.currentIndex];
     this.renderEngine.rows = [];
     this.renderEngine.rawElements = [];
@@ -95,17 +97,24 @@ class SearchableList extends CLIBase<string> {
         },
       },
     );
-    this.renderEngine.createElement("All done, press escape to exit...", {
+    const outputId = this.renderEngine.createElement(() => {
+      return this.output;
+    }, {
       align: "center",
       row: 7,
+      style: {
+        color: "brightWhite",
+      },
+    });
+    if (this.action) {
+      await this.action(selected);
+    }
+    this.renderEngine.updateElement(outputId, {
+      content: "All done! Press escape to exit...",
       style: {
         color: "brightYellow",
       },
     });
-
-    if (this.action) {
-      this.action(selected);
-    }
     return selected;
   }
   setup(): void {
