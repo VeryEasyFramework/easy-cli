@@ -280,7 +280,10 @@ export class RenderEngine {
         this._height = options?.height || this.height;
     }
 
-    get consoleSize() {
+    get consoleSize(): {
+        columns: number;
+        rows: number;
+    } {
         return Deno.consoleSize();
     }
 
@@ -292,7 +295,7 @@ export class RenderEngine {
             raw?: boolean;
             align?: HorizontalAlignment;
         },
-    ) {
+    ): string {
         const element = new Element({
             content,
             row: options.row,
@@ -306,11 +309,11 @@ export class RenderEngine {
         return element.id;
     }
 
-    getLastRow() {
+    getLastRow(): number {
         this.rows.sort((a, b) => a.line - b.line);
         return this.rows[this.rows.length - 1]?.line || 0;
     }
-    addElementToRow(element: Element, row: number) {
+    addElementToRow(element: Element, row: number): void {
         const existingRow = this.rows.find((r) => r.line === row);
         if (existingRow) {
             existingRow.elements.push(element);
@@ -325,7 +328,7 @@ export class RenderEngine {
         }
     }
 
-    getElement(id: string) {
+    getElement(id: string): Element | undefined {
         for (const row of this.rows) {
             const element = row.elements.find((element) => element.id === id);
             if (element) {
@@ -342,7 +345,7 @@ export class RenderEngine {
             style?: StyleOptions;
             horizontalAlignment?: HorizontalAlignment;
         },
-    ) {
+    ): void {
         const element = this.getElement(id);
         if (element) {
             const { content, style } = options;
@@ -354,29 +357,36 @@ export class RenderEngine {
         }
     }
 
-    removeElement(id: ElementID) {
+    removeElement(id: ElementID): void {
         for (const row of this.rows) {
             row.elements = row.elements.filter((element) => element.id !== id);
         }
     }
 
-    printFiller(char?: string, color?: Color) {
+    printFiller(char?: string, color?: Color): void {
         const { columns } = this.consoleSize;
         const filler = char || " ";
         println(filler.repeat(columns), color);
     }
 
-    getRowContent(rowNumber: number, columnSize: number) {
+    getRowContent(rowNumber: number, columnSize: number):
+        | Array<{
+            content: string;
+            style: StyleOptions;
+            dynamic?: boolean;
+            offsetX: number;
+        }>
+        | undefined {
         const row = this.rows.find((r) => r.line === rowNumber);
         if (row) {
             return row.getContentArray(columnSize);
         }
     }
-    getRawElements(rowNumber: number) {
+    getRawElements(rowNumber: number): Element[] {
         return this.rawElements.filter((element) => element.row === rowNumber);
     }
 
-    placeElements() {
+    placeElements(): void {
         goToTop();
         const { columns } = this.consoleSize;
         let currentRow = this.contentPaddingTop;
@@ -443,7 +453,7 @@ export class RenderEngine {
         }
     }
 
-    private clearUnpopulatedRows() {
+    private clearUnpopulatedRows(): void {
         const startAndEnd = {
             start: 2,
             end: this.consoleSize.columns - 1,
@@ -456,7 +466,7 @@ export class RenderEngine {
         this.populatedRows = [];
     }
 
-    renderFrame() {
+    renderFrame(): void {
         const { columns, rows } = this.consoleSize;
         const top = colorMe.bgBrightBlue(" ".repeat(columns));
         const bottom = colorMe.bgBrightBlue(" ".repeat(columns));
@@ -472,12 +482,12 @@ export class RenderEngine {
         print(bottom);
     }
 
-    isResized() {
+    isResized(): boolean {
         const resizedWidth = this.currentWidth !== this.previousWidth;
         const resizedHeight = this.currentHeight !== this.previousHeight;
         return resizedWidth || resizedHeight;
     }
-    renderScreen() {
+    renderScreen(): void {
         goToTop();
         if (this.isResized()) {
             this.previousWidth = this.currentWidth;
@@ -502,13 +512,13 @@ export class RenderEngine {
         // }
     }
 
-    reset() {
+    reset(): void {
         this.rows = [];
         this.rawElements = [];
         this.populatedRows = [];
         clearScreen();
     }
-    async run() {
+    async run(): Promise<void> {
         await asyncPause(500);
         hideCursor();
         clearScreen();
