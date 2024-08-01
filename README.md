@@ -13,6 +13,8 @@ deno add @eveffer/easy-cli
 
 ### EasyCLI
 
+![EasyCLI](docs/images/easy_cli.gif)
+
 ```typescript
 import { EasyCLI } from "@eveffer/easy-cli";
 
@@ -117,6 +119,8 @@ And the response will be:
 }
 ```
 
-### ObjectPrompter
-
 ### OptionSelector
+
+```typescript
+import { OptionSelector } from "@eveffer/easy-cli";
+```

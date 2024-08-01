@@ -1,17 +1,5 @@
 import { colorMe } from "@eveffer/color-me";
-
-const keyMap = {
-  up: "\x1b[A",
-  down: "\x1b[B",
-  left: "\x1b[D",
-  right: "\x1b[C",
-  enter: "\r",
-  escape: "\x1b",
-  ctrlC: "\x03",
-};
-const reverseKeyMap = Object.fromEntries(
-  Object.entries(keyMap).map(([key, value]) => [value, key]),
-);
+import { keyMap, navigateList } from "./cliUtils.ts";
 
 export interface SelectorOption<T> {
   name: string; // The name of the option
@@ -33,7 +21,7 @@ export class OptionSelector<T extends PropertyKey> {
     this.currentOption = 0;
   }
 
-  async prompt(): Promise<T> {
+  render() {
     console.clear();
     const options = this.options.map((option, index) => {
       const out = `${index + 1}. # ${option.name}`;
@@ -44,47 +32,27 @@ export class OptionSelector<T extends PropertyKey> {
       return `  ${out}`;
     });
     console.log(`Select an option:\n${options.join("\n")}`);
-    Deno.stdin.setRaw(true);
-    const input = Deno.stdin.readable.getReader();
-    const res = await input.read();
-    // convert Uint8Array to string
-    const option = res.value ? new TextDecoder().decode(res.value) : "";
-    switch (option) {
-      case keyMap.up:
-        this.currentOption -= 1;
-        if (this.currentOption < 0) {
-          this.currentOption = this.options.length - 1;
-        }
-        input.releaseLock();
-        await this.prompt();
-        break;
-      case keyMap.down:
-        this.currentOption += 1;
-        if (this.currentOption >= this.options.length) {
-          this.currentOption = 0;
-        }
-        input.releaseLock();
-        await this.prompt();
-        break;
-      // case keyMap.left:
-      //   break;
-      // case keyMap.right:
-      //   break;
-      case keyMap.enter:
-        break;
-      case keyMap.ctrlC:
-        Deno.exit();
-        break;
-      default:
-        input.releaseLock();
-        await this.prompt();
-        break;
-    }
-    console.clear();
-    input.releaseLock();
-    Deno.stdin.setRaw(false);
+  }
+
+  finalizer(): T {
     const currentOption = this.options[this.currentOption];
     currentOption?.action?.();
     return this.options[this.currentOption].id;
+  }
+  async prompt(): Promise<void> {
+    this.render();
+    await navigateList({
+      currentIndex: this.currentOption,
+      maxOptions: this.options.length,
+      onPrompt: () => this.prompt(),
+      onNavigate: (updatedIndex) => {
+        this.currentOption = updatedIndex;
+      },
+    });
+  }
+
+  async run(): Promise<T> {
+    await this.prompt();
+    return this.finalizer();
   }
 }

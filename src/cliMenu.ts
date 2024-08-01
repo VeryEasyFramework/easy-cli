@@ -1,16 +1,7 @@
 import { colorMe } from "@eveffer/color-me";
-import { cliFormatter } from "./cliUtils.ts";
-import type { ActionMenuItem, MenuItem, SubMenuItem } from "./types.ts";
-
-const keyMap = {
-  up: "\x1b[A",
-  down: "\x1b[B",
-  left: "\x1b[D",
-  right: "\x1b[C",
-  enter: "\r",
-  escape: "\x1b",
-  ctrlC: "\x03",
-};
+import { keyMap } from "./cliUtils.ts";
+import type { Action, ActionMenuItem, MenuItem, SubMenuItem } from "./types.ts";
+import { center } from "./utils/format.ts";
 
 /**
  * A simple CLI menu builder used in the EasyCli class
@@ -54,14 +45,14 @@ export class CliMenu {
 
   set menuHeader(value: string) {
     value = value || this.menuName;
-    const filler = cliFormatter.makeFiller("=", value);
-    this.formattedHeader = `${filler} ${value} ${filler}`;
+
+    this.formattedHeader = center(value, "=");
   }
 
   onBack(options: {
     title: string;
     description: string;
-    action: () => Promise<void> | void;
+    action: Action;
   }) {
     this.goBackItem = {
       title: options.title,
@@ -175,7 +166,20 @@ export class CliMenu {
             this.print(`Running action: ${currentItem.title}...\n\n`);
           }
           const result = await action();
-          this.output = JSON.stringify(result, null, 2) || "";
+          switch (typeof result) {
+            case "string":
+              this.output = result;
+              break;
+            case "object":
+              this.output = JSON.stringify(result, null, 2);
+              break;
+            case "number":
+              this.output = result.toString();
+              break;
+            default:
+              this.output = "";
+              break;
+          }
           if (currentItem?.waitAfterAction) {
             prompt(colorMe.green("Press any key to continue..."));
           }

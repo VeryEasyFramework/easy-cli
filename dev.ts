@@ -6,6 +6,10 @@ import {
   OptionSelector,
   TypedObjectPrompter,
 } from "./mod.ts";
+import { listenForInput, printTime } from "./src/cliUtils.ts";
+import { runCommand } from "./src/runCommand.ts";
+import { SearchableList } from "./src/searchableList.ts";
+import { listenerDemo } from "./src/utils/inputListener.ts";
 
 function easyCliDemo() {
   const easyCli = new EasyCli("My CLI App");
@@ -16,7 +20,17 @@ function easyCliDemo() {
     action: () => {
       console.log("This is a sample menu item");
     },
+
     waitAfterAction: true,
+  });
+  easyCli.addMenuItem({
+    title: "list files",
+    description: "list files in the current directory",
+
+    action: async () => {
+      const response = await runCommand("ls");
+      return response.stdout;
+    },
   });
   easyCli.addSubMenu({
     title: "Sample Sub Menu",
@@ -58,8 +72,12 @@ async function optionSelectorDemo() {
     name: "Option 2",
     description: "This is option 2",
     id: 2,
+  }, {
+    name: "Option 3",
+    description: "This is option 3",
+    id: 3,
   }]);
-  const result = await selector.prompt();
+  const result = await selector.run();
   console.log(result);
 }
 
@@ -107,10 +125,48 @@ async function typedPrompterDemo() {
   console.log(result);
 }
 
+async function searchableListDemo() {
+  const words = generateWordList(100);
+  const list = new SearchableList(words);
+  const result = await list.run();
+  console.log(result);
+}
+
+let count = 7;
+function generateRandomWord() {
+  if (count == 7) {
+    count = 0;
+  } else {
+    count = 7;
+  }
+
+  return Math.random().toString(36).substring(count);
+}
+
+function generateWordList(length: number) {
+  const words = [];
+  for (let i = 0; i < length; i++) {
+    words.push(`Word ${generateRandomWord()} ${i}`);
+  }
+  return words;
+}
+
 function wizardDemo() {
   // const wizard = createWizard();
 }
 if (import.meta.main) {
+  searchableListDemo();
+  // listenerDemo();
+  // let inputString = "";
+  // listenForInput((char) => {
+  //   inputString += char;
+  // });
+  // printTime(() => {
+  //   return inputString;
+  // });
   // easyCliDemo();
-  typedPrompterDemo();
+  // prompterDemo();
+  // typedPrompterDemo();
+  // optionSelectorDemo();
+  // await runCommand("python3");
 }

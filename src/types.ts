@@ -1,9 +1,12 @@
 import type { CliMenu } from "./cliMenu.ts";
 
+export type Action = () =>
+  | (Promise<void | Record<string, any> | string | number>)
+  | (void | Record<string, any> | string | number);
 export interface ActionMenuItem {
   title: string;
   description?: string;
-  action?: () => Promise<void | Record<string, any>> | void;
+  action?: Action;
   returnWhenDone?: boolean;
   waitAfterAction?: boolean;
 }
@@ -17,7 +20,7 @@ export interface SubMenuItem {
 export interface MenuItem {
   title: string;
   description?: string;
-  action?: () => Promise<void | Record<string, any>> | void;
+  action?: Action;
   returnWhenDone?: boolean;
   waitAfterAction?: boolean;
   subMenu?: CliMenu;
