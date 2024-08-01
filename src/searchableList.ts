@@ -48,18 +48,24 @@ class SearchableList extends CLIBase<string> {
   private _searchString: string;
   searchStringLength: number;
   currentIndex: number;
-  action?: (selection: string) => Promise<void>;
+  action?: (
+    selection: string,
+    setOutput: (data: string) => void,
+  ) => Promise<void>;
   constructor(
     listItems: string[],
     options?: {
       title?: string;
-      action?: (selection: string) => Promise<void> & ThisType<SearchableList>;
+      action?: (
+        selection: string,
+        setOutput: (data: string) => void,
+      ) => Promise<void>;
     },
   ) {
     super(options?.title || "Searchable List");
     this.sourceList = listItems.sort();
     this.filteredList = [];
-    this.action = options?.action?.bind(this);
+    this.action = options?.action;
     this._searchString = "";
     this.currentIndex = 0;
     this.searchStringLength = 0;
@@ -107,7 +113,9 @@ class SearchableList extends CLIBase<string> {
       },
     });
     if (this.action) {
-      await this.action(selected);
+      await this.action(selected, (data) => {
+        this.output = data;
+      });
     }
     this.renderEngine.updateElement(outputId, {
       content: "All done! Press escape to exit...",
