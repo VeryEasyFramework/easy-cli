@@ -1,7 +1,4 @@
-import { colorMe } from "@eveffer/color-me";
-import { asyncPause } from "./cliUtils.ts";
 import { center } from "./utils/format.ts";
-import { clearScreen, print, println } from "./utils/print.ts";
 import { RenderEngine } from "./utils/render.ts";
 import { InputListener } from "./utils/inputListener.ts";
 
