@@ -1,8 +1,7 @@
 import { colorMe } from "@eveffer/color-me";
 import { CLIBase } from "./cliBase.ts";
-import { keyMap, navigateList } from "./cliUtils.ts";
-import { center } from "./utils/format.ts";
-import { print, println, symbols } from "./utils/print.ts";
+
+import { symbols } from "./utils/print.ts";
 
 class SearchableList extends CLIBase<string> {
   sourceList: string[];
@@ -14,7 +13,7 @@ class SearchableList extends CLIBase<string> {
     this._searchString = value;
   }
 
-  get instructions() {
+  get instructions(): string {
     const up = colorMe.brightGreen(symbols.upArrowAlt);
     const down = colorMe.brightGreen(symbols.downArrowAlt);
     const enter = colorMe.brightGreen(symbols.enter);
@@ -78,11 +77,11 @@ class SearchableList extends CLIBase<string> {
     }
   }
 
-  getRenderedList() {
+  getRenderedList(): string {
     return this.filteredList.join("\n");
   }
 
-  finalizer() {
+  finalizer(): string {
     const selected = this.filteredList[this.currentIndex];
     this.renderEngine.rows = [];
     this.renderEngine.rawElements = [];

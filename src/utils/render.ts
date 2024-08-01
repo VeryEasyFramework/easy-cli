@@ -29,7 +29,7 @@ class Row {
     justify: Justify;
     elements: Array<Element>;
     line: number;
-    get width() {
+    get width(): number {
         return this.elements.reduce((acc, element) => {
             return acc + element.length;
         }, 0);
@@ -141,7 +141,7 @@ class Element {
     dynamic?: boolean;
     previousContent: string | string[] = "";
 
-    get length() {
+    get length(): number {
         // get the length of the content characters. ignore control characters
         const content = this.content;
         if (Array.isArray(content)) {
@@ -178,7 +178,7 @@ class Element {
         this._content = value;
     }
 
-    resetChanged() {
+    resetChanged(): void {
         const content = this.content;
         if (Array.isArray(content)) {
             this.previousContent = content.join("");
@@ -186,7 +186,7 @@ class Element {
             this.previousContent = content;
         }
     }
-    hasChanged() {
+    hasChanged(): boolean {
         const content = this.content;
         let stringContent = content as string;
         if (Array.isArray(content)) {
@@ -196,7 +196,7 @@ class Element {
         }
         return stringContent !== this.previousContent;
     }
-    getFormattedContent() {
+    getFormattedContent(): string | string[] {
         const content = this.content;
         let output = "";
         const color = this.style.color || "brightWhite";
@@ -236,14 +236,14 @@ export class RenderEngine {
     contentPadding = 2;
     _height = 20;
 
-    get height() {
+    get height(): number {
         return this.consoleSize.rows;
     }
-    get contentHeight() {
+    get contentHeight(): number {
         return this.height - this.contentPaddingTop;
     }
 
-    get currentWidth() {
+    get currentWidth(): number {
         return this.consoleSize.columns;
     }
 
@@ -253,10 +253,10 @@ export class RenderEngine {
 
     private _finished = false;
 
-    stop() {
+    stop(): void {
         this._finished = true;
     }
-    get currentHeight() {
+    get currentHeight(): number {
         return this.consoleSize.rows;
     }
 
@@ -264,7 +264,7 @@ export class RenderEngine {
     rawElements: Array<Element> = [];
     populatedRows: number[] = [];
 
-    get width() {
+    get width(): number {
         return this._width;
     }
 

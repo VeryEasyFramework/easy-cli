@@ -4,7 +4,7 @@ import { println } from "./print.ts";
 
 export class InputListener {
   hideCursor: boolean;
-  decoder = new TextDecoder();
+  decoder: TextDecoder = new TextDecoder();
 
   keyActions: Record<string, Array<() => void>> = {};
   charActions: Array<(char: string) => void> = [];
@@ -15,7 +15,7 @@ export class InputListener {
   done: boolean = false;
   input: ReadableStreamDefaultReader<Uint8Array> | null = null;
 
-  decode(data: Uint8Array) {
+  decode(data: Uint8Array): string {
     return this.decoder.decode(data);
   }
 
@@ -35,7 +35,7 @@ export class InputListener {
       action();
     });
   }
-  setUpListeners() {
+  setUpListeners(): void {
     this.on("ctrlC", () => {
       showCursor();
       Deno.exit();

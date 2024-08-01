@@ -34,7 +34,7 @@ export class OptionSelector<T extends PropertyKey> {
     console.log(`Select an option:\n${options.join("\n")}`);
   }
 
-  finalizer() {
+  finalizer(): T {
     const currentOption = this.options[this.currentOption];
     currentOption?.action?.();
     return this.options[this.currentOption].id;

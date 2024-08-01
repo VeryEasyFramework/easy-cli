@@ -12,7 +12,7 @@ export abstract class CLIBase<T> {
 
   result!: T;
 
-  get header() {
+  get header(): string {
     return center(this.title, "=", {
       contentColor: "brightCyan",
       fillerColor: "brightWhite",
@@ -48,7 +48,7 @@ export abstract class CLIBase<T> {
 
   abstract setup(): void;
 
-  run() {
+  run(): Promise<T> {
     this.setup();
     const promise = new Promise<T>((resolve) => {
       this.listener.onDone(() => {
