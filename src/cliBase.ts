@@ -1,6 +1,7 @@
 import { center } from "./utils/format.ts";
 import { RenderEngine } from "./utils/render.ts";
 import { InputListener } from "./utils/inputListener.ts";
+import { showCursor } from "./cliUtils.ts";
 
 export abstract class CLIBase<T> {
   title: string;
@@ -50,7 +51,7 @@ export abstract class CLIBase<T> {
     const promise = new Promise<T>((resolve) => {
       this.listener.onDone(() => {
         this.renderEngine.stop();
-
+        showCursor();
         resolve(this.result);
         // this.renderEngine.stop();
       });
