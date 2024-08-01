@@ -7,15 +7,9 @@
     "@eveffer/string-utils": "jsr:@eveffer/string-utils@^0.1.2"
   },
   "publish": {
-    "include": [
-      "mod.ts",
-      "src/**/*.ts",
-      "docs",
-      "README.md",
-      "LICENSE"
-    ],
     "exclude": [
-      "dev.ts"
+      "dev.ts",
+      ".github"
     ]
   },
   "tasks": {
