@@ -3,6 +3,11 @@ import { CLIBase } from "./cliBase.ts";
 
 import { symbols } from "./utils/print.ts";
 
+/**
+ * Displays a list of items that can be quick filtered by typing a search string
+ * And navigated with up and down arrows
+ */
+
 class SearchableList extends CLIBase<string> {
   sourceList: string[];
   filteredList: string[];
