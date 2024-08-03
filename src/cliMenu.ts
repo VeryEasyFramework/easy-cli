@@ -1,4 +1,4 @@
-import { colorMe } from "@eveffer/color-me";
+import { colorMe } from "@vef/color-me";
 import { keyMap } from "./cliUtils.ts";
 import type { Action, ActionMenuItem, MenuItem, SubMenuItem } from "./types.ts";
 import { center } from "./utils/format.ts";

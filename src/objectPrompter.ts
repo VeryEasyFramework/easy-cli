@@ -1,4 +1,4 @@
-import { colorMe } from "@eveffer/color-me";
+import { colorMe } from "@vef/color-me";
 
 export type FieldKeyOption<T> = {
   message: string;

@@ -1,4 +1,4 @@
-import { colorMe } from "@eveffer/color-me";
+import { colorMe } from "@vef/color-me";
 import { CLIBase } from "./cliBase.ts";
 
 import { symbols } from "./utils/print.ts";

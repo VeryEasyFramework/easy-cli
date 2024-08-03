@@ -1,5 +1,5 @@
-import { colorMe } from "@eveffer/color-me";
-import { camelToSnakeCase, toTitleCase } from "@eveffer/string-utils";
+import { colorMe } from "@vef/color-me";
+import { camelToSnakeCase, toTitleCase } from "@vef/string-utils";
 
 interface Field<K extends PropertyKey, T extends keyof FieldTypesMap> {
   key: K;

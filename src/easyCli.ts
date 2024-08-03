@@ -1,4 +1,4 @@
-import { colorMe } from "@eveffer/color-me";
+import { colorMe } from "@vef/color-me";
 
 import { CliMenu } from "./cliMenu.ts";
 import type { ActionMenuItem, SubMenuItem } from "./types.ts";

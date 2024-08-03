@@ -1,4 +1,4 @@
-# Easy CLI
+Usage# Easy CLI
 
 A CLI library for Deno that allows you to create an interactive CLI application
 with ease.
@@ -6,7 +6,7 @@ with ease.
 ## Installation
 
 ```bash
-deno add @eveffer/easy-cli
+deno add @vef/easy-cli
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ deno add @eveffer/easy-cli
 ![EasyCLI](docs/images/easy_cli.gif)
 
 ```typescript
-import { EasyCLI } from "@eveffer/easy-cli";
+import { EasyCLI } from "@vef/easy-cli";
 
 const easyCli = new EasyCli("My CLI App");
 
@@ -45,7 +45,7 @@ if (import.meta.main) {
 ### TypedObjectPrompter
 
 ```typescript
-import { TypedObjectPrompter } from "@eveffer/easy-cli";
+import { TypedObjectPrompter } from "@vef/easy-cli";
 
 const prompter = new TypedObjectPrompter({
   fields: [
@@ -122,5 +122,5 @@ And the response will be:
 ### OptionSelector
 
 ```typescript
-import { OptionSelector } from "@eveffer/easy-cli";
+import { OptionSelector } from "@vef/easy-cli";
 ```

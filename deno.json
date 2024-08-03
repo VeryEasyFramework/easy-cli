@@ -1,15 +1,16 @@
 {
-  "name": "@eveffer/easy-cli",
+  "name": "@vef/easy-cli",
   "version": "0.1.11",
   "exports": "./mod.ts",
   "imports": {
-    "@eveffer/color-me": "jsr:@eveffer/color-me@^0.1.4",
-    "@eveffer/string-utils": "jsr:@eveffer/string-utils@^0.1.2"
+    "@vef/color-me": "jsr:@vef/color-me@^1.0.2",
+    "@vef/string-utils": "jsr:@vef/string-utils@^0.1.2"
   },
   "publish": {
     "exclude": [
       "dev.ts",
-      ".github"
+      ".github",
+      ".vscode"
     ]
   },
   "tasks": {

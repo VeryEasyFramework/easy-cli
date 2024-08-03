@@ -1,4 +1,4 @@
-import { colorMe, type ColorOptions } from "@eveffer/color-me";
+import { colorMe, type ColorOptions } from "@vef/color-me";
 
 export type Color = keyof typeof colorMe;
 

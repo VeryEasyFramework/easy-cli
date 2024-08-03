@@ -1,4 +1,4 @@
-import { colorMe } from "@eveffer/color-me";
+import { colorMe } from "@vef/color-me";
 import type { Color } from "./print.ts";
 
 export function getConsoleWidth() {

@@ -1,4 +1,4 @@
-import { colorMe } from "@eveffer/color-me";
+import { colorMe } from "@vef/color-me";
 import { keyMap, navigateList } from "./cliUtils.ts";
 
 export interface SelectorOption<T> {
