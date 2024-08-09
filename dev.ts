@@ -155,7 +155,7 @@ function wizardDemo() {
   // const wizard = createWizard();
 }
 if (import.meta.main) {
-  searchableListDemo();
+  // searchableListDemo();
   // listenerDemo();
   // let inputString = "";
   // listenForInput((char) => {
@@ -164,7 +164,7 @@ if (import.meta.main) {
   // printTime(() => {
   //   return inputString;
   // });
-  // easyCliDemo();
+  easyCliDemo();
   // prompterDemo();
   // typedPrompterDemo();
   // optionSelectorDemo();

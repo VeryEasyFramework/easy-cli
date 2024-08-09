@@ -5,3 +5,5 @@ export { OptionSelector } from "./src/optionSelector.ts";
 export { SearchableList } from "./src/searchableList.ts";
 export { TypedObjectPrompter } from "./src/typedObjectPrompter.ts";
 export { createWizard } from "./src/wizard.ts";
+
+export * as printUtils from "./src/utils/print.ts";
