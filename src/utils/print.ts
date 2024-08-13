@@ -17,12 +17,13 @@ export function print(content: string, color?: Color, options?: ColorOptions) {
 }
 
 export function println(content: string, color?: Color) {
-  print(`${content}\n`, color);
+  console.log(colorMe[color || "white"](content));
+  // print(`${content}\n`, color);
 }
 
 export function printLines(count: number) {
   for (let i = 0; i < count; i++) {
-    print("\n");
+    println("");
   }
 }
 

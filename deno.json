@@ -1,6 +1,6 @@
 {
   "name": "@vef/easy-cli",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "exports": "./mod.ts",
   "imports": {
     "@vef/color-me": "jsr:@vef/color-me@^1.0.2",
