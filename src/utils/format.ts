@@ -1,4 +1,4 @@
-import { colorMe } from "@vef/color-me";
+import { colorMe, ColorOptions } from "@vef/color-me";
 import type { Color } from "./print.ts";
 
 export function getConsoleWidth() {
@@ -47,4 +47,14 @@ export function center(content: string, char?: string, options?: {
     filler = colorMe[options.fillerColor](filler);
   }
   return `${filler} ${content} ${filler}`;
+}
+
+export function fill(char: string, options?: ColorOptions & { color: Color }) {
+  const width = getConsoleWidth();
+  const line = char.repeat(width);
+  if (options) {
+    const color = options.color || "white";
+    return colorMe[color](line, options);
+  }
+  return line;
 }

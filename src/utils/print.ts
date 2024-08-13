@@ -20,6 +20,12 @@ export function println(content: string, color?: Color) {
   print(`${content}\n`, color);
 }
 
+export function printLines(count: number) {
+  for (let i = 0; i < count; i++) {
+    print("\n");
+  }
+}
+
 export function goToTop() {
   print("\x1b[H");
 }
@@ -50,6 +56,13 @@ export function clearLine(line: number, options?: {
   clearCurrentLine();
 }
 
+export function hideCursor() {
+  console.log("\x1B[?25l");
+}
+
+export function showCursor() {
+  console.log("\x1B[?25h");
+}
 export function clearLines(start: number, end: number) {
   for (let i = start; i <= end; i++) {
     clearLine(i);
@@ -69,4 +82,128 @@ export const symbols = {
   downArrowAlt: "↓",
   enter: "↵",
   cursor: "❯",
+  cursorAlt: "❯❯",
+  cursorAlt2: "❯❯❯",
+  cursorAlt3: "❯❯❯❯",
+  leftArrow: "◀",
+  rightArrow: "▶",
+  leftArrowAlt: "←",
+  rightArrowAlt: "→",
+  pipe: "│",
+  pipeWide: "┃",
+  pipeAlt: "┆",
+  pipeAltWide: "┇",
+  pipeAlt2: "┊",
+  pipeAlt2Wide: "┋",
+};
+
+export const symbol = {
+  check: "✔",
+  cross: "✖",
+  star: "★",
+  square: "▇",
+  squareSmall: "◻",
+  squareSmallFilled: "◼",
+  play: "▶",
+  circle: "◯",
+  circleFilled: "◉",
+  circleDotted: "◌",
+  circleDouble: "◎",
+  circleCircle: "ⓞ",
+  circleCross: "ⓧ",
+  circlePipe: "Ⓘ",
+  circleQuestionMark: "?⃝",
+  bullet: "●",
+  dot: "․",
+  line: "─",
+  ellipsis: "…",
+  pointer: "❯",
+  pointerSmall: "›",
+  info: "ℹ",
+  warning: "⚠",
+  hamburger: "☰",
+  smiley: "㋡",
+  mustache: "෴",
+  heart: "♥",
+  arrowUp: "↑",
+  arrowDown: "↓",
+  arrowLeft: "←",
+  arrowRight: "→",
+  radioOn: "◉",
+  radioOff: "◯",
+  checkboxOn: "☒",
+  checkboxOff: "☐",
+  checkboxCircleOn: "ⓧ",
+  checkboxCircleOff: "Ⓘ",
+  questionMarkPrefix: "?⃝",
+  oneHalf: "½",
+  oneThird: "⅓",
+  oneQuarter: "¼",
+  oneFifth: "⅕",
+  oneSixth: "⅙",
+  oneSeventh: "⅐",
+  oneEighth: "⅛",
+  oneNinth: "⅑",
+  oneTenth: "⅒",
+  twoThirds: "⅔",
+  twoFifths: "⅖",
+  threeQuarters: "¾",
+  threeFifths: "⅗",
+  threeEighths: "⅜",
+  fourFifths: "⅘",
+  fiveSixths: "⅚",
+  fiveEighths: "⅝",
+  sevenEighths: "⅞",
+  box: {
+    topLeft: "┌",
+    topRight: "┐",
+    bottomLeft: "└",
+    bottomRight: "┘",
+    vertical: "│",
+    horizontal: "─",
+    verticalLeft: "┤",
+    verticalRight: "├",
+    horizontalDown: "┬",
+    horizontalUp: "┴",
+  },
+  arrows: {
+    up: "↑",
+    down: "↓",
+    left: "←",
+    right: "→",
+    upRight: "↗",
+    upLeft: "↖",
+    downRight: "↘",
+    downLeft: "↙",
+    altUp: "▲",
+    altDown: "▼",
+    altLeft: "◀",
+    altRight: "▶",
+    alt2Up: "⇧",
+    alt2Down: "⇩",
+    alt2Left: "⇦",
+    alt2Right: "⇨",
+    alt3Up: "⬆",
+    alt3Down: "⬇",
+    alt3Left: "⬅",
+    alt3Right: "➡",
+  },
+  lit: {
+    singleQuote: "‛",
+    doubleQuote: "“",
+    doubleQuoteAlt: "”",
+    singleQuoteAlt: "’",
+    backtick: "‘",
+    copyWrite: "©",
+    registered: "®",
+    trademark: "™",
+  },
+  cursors: {
+    block: "█",
+    alt: "❯",
+    alt2: "❯❯",
+    alt3: "❯❯❯",
+    alt4: "❯❯❯❯",
+    pipe: "│",
+  },
 };

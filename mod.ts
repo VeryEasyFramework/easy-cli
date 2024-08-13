@@ -7,3 +7,4 @@ export { TypedObjectPrompter } from "./src/typedObjectPrompter.ts";
 export { createWizard } from "./src/wizard.ts";
 
 export * as printUtils from "./src/utils/print.ts";
+export * as formatUtils from "./src/utils/format.ts";
