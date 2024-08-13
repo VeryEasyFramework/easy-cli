@@ -1,11 +1,11 @@
-import { colorMe, ColorOptions } from "@vef/color-me";
+import { colorMe, type ColorOptions } from "@vef/color-me";
 import type { Color } from "./print.ts";
 
-export function getConsoleWidth() {
+export function getConsoleWidth(): number {
   return Deno.consoleSize().columns;
 }
 
-export function getCenterOffset(content: string, width: number) {
+export function getCenterOffset(content: string, width: number): number {
   const controlCharacters = content.match(/\u001b\[[0-9;]*m/g) || [];
   let controlCharactersLength = controlCharacters.join("").length;
 
@@ -21,7 +21,7 @@ export function center(content: string, char?: string, options?: {
   contentColor?: Color;
   fillerColor?: Color;
   color?: Color;
-}) {
+}): string {
   const repeatChar = char || " ";
   const width = getConsoleWidth();
 
@@ -49,7 +49,10 @@ export function center(content: string, char?: string, options?: {
   return `${filler} ${content} ${filler}`;
 }
 
-export function fill(char: string, options?: ColorOptions & { color: Color }) {
+export function fill(
+  char: string,
+  options?: ColorOptions & { color: Color },
+): string {
   const width = getConsoleWidth();
   const line = char.repeat(width);
   if (options) {
