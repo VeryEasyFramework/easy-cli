@@ -33,9 +33,12 @@ export function center(content: string, char?: string, options?: {
   }
 
   const contentLength = content.length - controlCharactersLength;
-
+  let center = (width - contentLength - 2) / 2;
+  if (center < 0) {
+    center = 0;
+  }
   let filler = repeatChar.repeat(
-    (width - contentLength - 2) / 2,
+    center,
   );
   if (options?.color) {
     return colorMe[options.color](`${filler} ${content} ${filler}`);
