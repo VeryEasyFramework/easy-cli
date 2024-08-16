@@ -2,6 +2,7 @@ import { center } from "./utils/format.ts";
 import { RenderEngine, StyleOptions } from "./utils/render.ts";
 import { InputListener } from "./utils/inputListener.ts";
 import { showCursor } from "./cliUtils.ts";
+import { symbol, symbols } from "./utils/print.ts";
 
 export abstract class CLIBase<T> {
   title: string;
@@ -33,7 +34,9 @@ export abstract class CLIBase<T> {
   }
 
   setHeader() {
-    this.renderEngine.createElement(this.title, {
+    this.renderEngine.createElement(() => {
+      return this.title;
+    }, {
       row: 1,
       align: "center",
       style: {
@@ -45,7 +48,9 @@ export abstract class CLIBase<T> {
     //  / this.renderEngine.justifyContent(1, "center");
 
     if (this.description) {
-      this.renderEngine.createElement(this.description, {
+      this.renderEngine.createElement(() => {
+        return this.description!;
+      }, {
         row: 3,
         align: "center",
         style: {
@@ -73,12 +78,14 @@ export abstract class CLIBase<T> {
       this.listener.stop();
     }
   }
-
+  setDebug() {
+    this.renderEngine.padChar = "-";
+  }
   abstract finalizer(): Promise<T>;
 
   abstract setup(): void;
 
-  run(): Promise<T> {
+  async run(noWait?: boolean): Promise<T> {
     this.setup();
     this.setHeader();
     const promise = new Promise<T>((resolve) => {
@@ -89,9 +96,9 @@ export abstract class CLIBase<T> {
         // this.renderEngine.stop();
       });
     });
-    this.renderEngine.run();
-
     this.listener.listen();
+    this.renderEngine.run(noWait);
+
     // await this.prompt();
     return promise;
   }

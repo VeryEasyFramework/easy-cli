@@ -1,193 +1,57 @@
-import {
-  CliMenu,
-  createWizard,
-  EasyCli,
-  ObjectPrompter,
-  OptionSelector,
-  TypedObjectPrompter,
-} from "./mod.ts";
-import { ActionMenu } from "./src/actionMenu.ts";
-import { listenForInput, printTime } from "./src/cliUtils.ts";
-import { runCommand } from "./src/runCommand.ts";
-import { SearchableList } from "./src/searchableList.ts";
-import { listenerDemo } from "./src/utils/inputListener.ts";
+import { InputListener } from "./src/utils/inputListener.ts";
+import { RenderEngine } from "./src/utils/render.ts";
+import { BaseView } from "#/views/baseView.ts";
+import { MenuView } from "./src/views/menuView.ts";
+import { OutputView } from "./src/views/outputView.ts";
 
-function easyCliDemo() {
-  const easyCli = new EasyCli("My CLI App");
-
-  easyCli.addMenuItem({
-    title: "Sample Menu Item",
-    description: "This is a sample menu item",
-    action: () => {
-      console.log("This is a sample menu item");
-    },
-
-    waitAfterAction: true,
-  });
-  easyCli.addMenuItem({
-    title: "list files",
-    description: "list files in the current directory",
-
-    action: async () => {
-      const response = await runCommand("ls");
-      return response.stdout;
-    },
-  });
-  easyCli.addSubMenu({
-    title: "Sample Sub Menu",
-    description: "This is a sample sub menu",
-    subMenu: new CliMenu("Sample Sub Menu"),
-  });
-  easyCli.run();
+interface EasyCliOptions {
+  appName?: string;
+  description?: string;
 }
-function prompterDemo() {
-  const prompter = new ObjectPrompter(
-    [
-      {
-        key: "name",
-        message: "What is your name?",
-        default: "John Doe",
-      },
-      {
-        key: "age",
-        message: "How old are you?",
-      },
-      {
-        key: "email",
-        message: "What is your email?",
-        default: "example@email.com",
-      },
-    ],
-  );
-  const result = prompter.prompt();
+class EasyCli<V extends PropertyKey = PropertyKey> {
+  appName: string;
+  private renderEngine: RenderEngine;
+  private listener: InputListener;
+  private views: Record<V, BaseView> = {} as Record<V, BaseView>;
 
-  console.log({ result });
-}
-
-async function optionSelectorDemo() {
-  const selector = new OptionSelector([{
-    name: "Option 1",
-    description: "This is option 1",
-    id: 1,
-  }, {
-    name: "Option 2",
-    description: "This is option 2",
-    id: 2,
-  }, {
-    name: "Option 3",
-    description: "This is option 3",
-    id: 3,
-  }]);
-  const result = await selector.run();
-  console.log(result);
-}
-
-function cliPrompterDemo() {
-  // const prompter = new CliPrompter({});
-}
-
-async function typedPrompterDemo() {
-  const prompter = new TypedObjectPrompter({
-    fields: [
-      {
-        key: "name",
-        message: "What is your name?",
-        type: "string",
-        required: true,
-      },
-      {
-        key: "age",
-        message: "How old are you?",
-        type: "number",
-      },
-      {
-        key: "email",
-        message: "What is your email?",
-        type: "string",
-        defaultValue: "example@example.com",
-      },
-      {
-        key: "isStudent",
-        message: "Are you a student?",
-        type: "boolean",
-        required: true,
-      },
-      {
-        key: "hobbies",
-        message: "What are your hobbies?",
-        type: "array",
-        required: true,
-      },
-    ],
-  });
-  const result = await prompter.prompt();
-  const age = result.age;
-
-  console.log(result);
-}
-
-async function searchableListDemo() {
-  const words = generateWordList(100);
-  const list = new SearchableList(words);
-  const result = await list.run();
-  console.log(result);
-}
-
-let count = 7;
-function generateRandomWord() {
-  if (count == 7) {
-    count = 0;
-  } else {
-    count = 7;
+  private currentView?: BaseView;
+  constructor(options?: EasyCliOptions) {
+    this.renderEngine = new RenderEngine();
+    this.listener = new InputListener();
+    this.appName = options?.appName || "Easy CLI";
+  }
+  addView(view: BaseView, key: V) {
+    view.init(this.renderEngine, this.listener);
+    this.views[key] = view;
   }
 
-  return Math.random().toString(36).substring(count);
-}
-
-function generateWordList(length: number) {
-  const words = [];
-  for (let i = 0; i < length; i++) {
-    words.push(`Word ${generateRandomWord()} ${i}`);
+  changeView(key: V) {
+    this.currentView = this.views[key];
+    this.currentView.show();
   }
-  return words;
+
+  run() {
+    this.listener.listen();
+    this.renderEngine.run();
+  }
 }
 
-function actionMenuDemo() {
-  const menu = new ActionMenu("Action Menu", "This is an action menu");
-  menu.addAction({
-    name: "Action 1ssssssdaewfss",
-
-    action: () => {
-      console.log("Action 1");
-    },
-  });
-
-  menu.addAction({
-    name: "Action 2 things",
-    description: "This is action 2",
-    action: () => {
-      console.log("Action 2");
-    },
-  });
-  menu.run();
-}
-function wizardDemo() {
-  // const wizard = createWizard();
-}
 if (import.meta.main) {
-  // searchableListDemo();
-  // listenerDemo();
-  // let inputString = "";
-  // listenForInput((char) => {
-  //   inputString += char;
-  // });
-  // printTime(() => {
-  //   return inputString;
-  // });
-  actionMenuDemo();
-  // easyCliDemo();
-  // prompterDemo();
-  // typedPrompterDemo();
-  // optionSelectorDemo();
-  // await runCommand("python3");
+  const cli = new EasyCli();
+
+  const menuView = new MenuView();
+  const outputView = new OutputView();
+  cli.addView(menuView, "menu");
+  cli.addView(outputView, "output");
+
+  cli.run();
+
+  cli.changeView("menu");
+  setTimeout(() => {
+    cli.changeView("output");
+  }, 2000);
+
+  setTimeout(() => {
+    cli.changeView("menu");
+  }, 4000);
 }

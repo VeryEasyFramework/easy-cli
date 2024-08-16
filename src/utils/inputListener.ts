@@ -1,5 +1,5 @@
 import { hideCursor, showCursor } from "../cliUtils.ts";
-import { keyMap, type KeyStroke } from "./keyMap.ts";
+import { Char, keyMap, type KeyStroke } from "./keyMap.ts";
 import { println } from "./print.ts";
 
 export class InputListener {
@@ -7,7 +7,7 @@ export class InputListener {
   decoder: TextDecoder = new TextDecoder();
 
   keyActions: Record<string, Array<() => void>> = {};
-  charActions: Array<(char: string) => void> = [];
+  charActions: Array<(char: Char) => void> = [];
   lineActions: Array<(line: string) => void> = [];
   doneActions: Array<() => void> = [];
 
@@ -56,13 +56,26 @@ export class InputListener {
       this.lineBuffer += char;
     });
   }
+
+  private clearListeners() {
+    this.keyActions = {};
+    this.charActions = [];
+    this.lineActions = [];
+    this.doneActions = [];
+  }
+  reset() {
+    this.lineBuffer = "";
+    this.done = false;
+    this.clearListeners();
+    this.setUpListeners();
+  }
   on(key: KeyStroke, action: () => void) {
     if (!this.keyActions[keyMap[key]]) {
       this.keyActions[keyMap[key]] = [];
     }
     this.keyActions[keyMap[key]].push(action);
   }
-  onChar(action: (char: string) => void) {
+  onChar(action: (char: Char) => void) {
     this.charActions.push(action);
   }
   onLine(action: (line: string) => void) {
@@ -97,7 +110,7 @@ export class InputListener {
       key.length === 1 && key.charCodeAt(0) >= 32 && key.charCodeAt(0) <= 126
     ) {
       this.charActions.forEach((action) => {
-        action(key);
+        action(key as Char);
       });
     }
 
