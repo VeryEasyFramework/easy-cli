@@ -13,7 +13,7 @@ import {
 import { generateRandomString } from "@vef/string-utils";
 import { getCenterOffset } from "./format.ts";
 
-type HorizontalAlignment = "left" | "right" | "center";
+type HorizontalAlignment = "start" | "end" | "center";
 type Justify =
   | "start"
   | "end"
@@ -21,7 +21,7 @@ type Justify =
   | "space-between"
   | "space-around"
   | "space-evenly";
-type StyleOptions = ColorOptions & { color?: ColorName };
+export type StyleOptions = ColorOptions & { color?: ColorName };
 
 type ElementID = string;
 
@@ -62,11 +62,17 @@ class Row {
       };
     });
   }
+
   getContentArray(
     containerWidth: number,
+    offsetX = 0,
   ): Array<
     {
       content: string;
+      padding: {
+        padStart: number;
+        padEnd: number;
+      };
       style: StyleOptions;
       dynamic?: boolean;
       offsetX: number;
@@ -75,20 +81,49 @@ class Row {
     const totalWidth = this.width;
     const elementCount = this.elements.length;
 
-    const diff = containerWidth - totalWidth;
-    let offsetX = 0;
+    const diff = totalWidth - containerWidth;
 
     switch (this.justify) {
       case "start": {
-        return this.mapOffset(offsetX, (offset, element) => {
-          offset += element.length;
-          return offset;
+        return this.elements.map((element) => {
+          const offset = offsetX;
+          let totalLength = element.length;
+          if (
+            element.layout?.minWidth &&
+            element.layout?.minWidth > element.length
+          ) {
+            totalLength = element.layout.minWidth;
+          }
+
+          offsetX += totalLength;
+          return {
+            content: element.content as string,
+            padding: element.getContentPadding(totalLength),
+            style: element.style,
+            dynamic: element.dynamic,
+            offsetX: offset,
+          };
         });
       }
       case "end": {
-        return this.mapOffset(offsetX, (offset, element) => {
-          offset += diff;
-          return offset;
+        return this.elements.map((element) => {
+          const offset = offsetX;
+          let totalLength = element.length;
+          if (
+            element.layout?.minWidth &&
+            element.layout?.minWidth > element.length
+          ) {
+            totalLength = element.layout.minWidth;
+          }
+
+          offsetX += totalLength;
+          return {
+            content: element.content as string,
+            padding: element.getContentPadding(totalLength),
+            style: element.style,
+            dynamic: element.dynamic,
+            offsetX: offset,
+          };
         });
       }
       case "center": {
@@ -96,9 +131,19 @@ class Row {
         offsetX += offsetCenter;
         return this.elements.map((element) => {
           const offset = offsetX;
-          offsetX += element.length;
+
+          let totalLength = element.length;
+          if (
+            element.layout?.minWidth &&
+            element.layout?.minWidth > element.length
+          ) {
+            totalLength = element.layout.minWidth;
+          }
+
+          offsetX += totalLength;
           return {
             content: element.content as string,
+            padding: element.getContentPadding(totalLength),
             style: element.style,
             dynamic: element.dynamic,
             offsetX: offset,
@@ -107,27 +152,41 @@ class Row {
       }
       case "space-between": {
         const spaceBetween = Math.floor(diff / (elementCount - 1));
-
-        return this.mapOffset(offsetX, (offset, element) => {
-          offsetX += element.length + spaceBetween;
-          return offset;
-        });
+        throw new Error("Not implemented");
       }
       case "space-around": {
         const spaceAround = Math.floor(diff / elementCount);
 
-        return this.mapOffset(offsetX, (offset, element) => {
-          offsetX += element.length + spaceAround;
-          return offset;
-        });
+        throw new Error("Not implemented");
       }
       case "space-evenly": {
-        const spaceEvenly = Math.floor(diff / (elementCount + 1));
-        offsetX += spaceEvenly;
+        let defaultLength = containerWidth / elementCount;
+        let maxWidthElementCount = 0;
+        this.elements.forEach((element) => {
+          if (
+            element.layout?.maxWidth && element.layout.maxWidth < defaultLength
+          ) {
+            maxWidthElementCount += 1;
+            const diff = defaultLength - element.layout.maxWidth;
+            defaultLength += diff / (elementCount - maxWidthElementCount);
+          }
+        });
+        return this.elements.map((element, index) => {
+          let totalLength = defaultLength;
+          if (
+            element.layout?.maxWidth && element.layout.maxWidth < totalLength
+          ) {
+            totalLength = element.layout.maxWidth;
+          }
 
-        return this.mapOffset(offsetX, (offset, element) => {
-          offsetX += element.length + spaceEvenly;
-          return offset;
+          offsetX += totalLength;
+          return {
+            content: element.content as string,
+            padding: element.getContentPadding(totalLength),
+            style: element.style,
+            dynamic: element.dynamic,
+            offsetX: offsetX - totalLength,
+          };
         });
       }
     }
@@ -136,9 +195,14 @@ class Row {
 class Element {
   id: ElementID;
   _content: string | (() => string | string[]) | string[];
-  style: StyleOptions;
+  _style: StyleOptions | (() => StyleOptions) = {};
   row: number | undefined;
   dynamic?: boolean;
+  layout?: {
+    minWidth?: number;
+    maxWidth?: number;
+    justifyContent?: HorizontalAlignment;
+  };
   previousContent: string | string[] = "";
 
   get length(): number {
@@ -170,6 +234,7 @@ class Element {
 
     return content;
   }
+
   set content(value: string | (() => string) | string[]) {
     this.dynamic = false;
     if (typeof value === "function") {
@@ -177,7 +242,15 @@ class Element {
     }
     this._content = value;
   }
-
+  get style(): StyleOptions {
+    if (typeof this._style === "function") {
+      return this._style();
+    }
+    return this._style;
+  }
+  set style(value: StyleOptions | (() => StyleOptions)) {
+    this._style = value;
+  }
   resetChanged(): void {
     const content = this.content;
     if (Array.isArray(content)) {
@@ -196,9 +269,46 @@ class Element {
     }
     return stringContent !== this.previousContent;
   }
+  getContentPadding(totalLength: number): {
+    padStart: number;
+    padEnd: number;
+  } {
+    const content = this.content;
+    let stringContent = content as string;
+    if (Array.isArray(content)) {
+      stringContent = content.join("");
+    } else {
+      stringContent = content;
+    }
+    const justify = this.layout?.justifyContent || "start";
+
+    let padStart = 0;
+    let padEnd = 0;
+    switch (justify) {
+      case "start": {
+        padEnd = totalLength - stringContent.length;
+        break;
+      }
+      case "end": {
+        padStart = totalLength - stringContent.length;
+        break;
+      }
+      case "center": {
+        padStart = Math.floor((totalLength - stringContent.length) / 2);
+        padEnd = totalLength - stringContent.length - padStart;
+        break;
+      }
+    }
+
+    return {
+      padStart,
+      padEnd,
+    };
+  }
   getFormattedContent(): string | string[] {
     const content = this.content;
     let output = "";
+
     const color = this.style.color || "brightWhite";
     if (Array.isArray(content)) {
       for (let i = 0; i < content.length; i++) {
@@ -210,9 +320,11 @@ class Element {
   }
   constructor(options: {
     content: string | (() => string | string[]) | string[];
-    style?: StyleOptions;
+    style?: StyleOptions | (() => StyleOptions);
     row?: number;
-    horizontalAlignment?: HorizontalAlignment;
+    minWidth?: number;
+    maxWidth?: number;
+    justifyContent?: HorizontalAlignment;
   }) {
     this.id = generateRandomString(8);
     this.dynamic = false;
@@ -222,6 +334,11 @@ class Element {
     this._content = options.content;
     this.row = options.row;
     this.style = options.style || {};
+    this.layout = {
+      justifyContent: options.justifyContent || "start",
+      minWidth: options.minWidth,
+      maxWidth: options.maxWidth,
+    };
   }
 }
 interface LineOptions extends ColorOptions {
@@ -286,20 +403,30 @@ export class RenderEngine {
   } {
     return Deno.consoleSize();
   }
-
+  justifyContent(row: number, justify: Justify): void {
+    const rowElements = this.rows.filter((r) => r.line === row);
+    if (rowElements.length) {
+      rowElements[0].justify = justify;
+    }
+  }
   createElement(
     content: string | (() => string | string[]) | string[],
     options: {
+      maxWidth?: number;
+      minWidth?: number;
       row?: number;
-      style?: StyleOptions;
+      style?: StyleOptions | (() => StyleOptions);
       raw?: boolean;
       align?: HorizontalAlignment;
     },
   ): string {
     const element = new Element({
       content,
+      maxWidth: options.maxWidth,
+      minWidth: options.minWidth,
       row: options.row,
       style: options.style,
+      justifyContent: options.align,
     });
     if (options.raw) {
       this.rawElements.push(element);
@@ -320,7 +447,7 @@ export class RenderEngine {
     } else {
       this.rows.push(
         new Row({
-          justify: "center",
+          justify: "space-evenly",
           elements: [element],
           line: row,
         }),
@@ -394,17 +521,24 @@ export class RenderEngine {
       start: 2,
       end: columns - 1,
     };
+    const containerWidth = columns - (this.contentPadding * 2) - 2;
     for (const row of this.rows) {
       const currentLine = row.line + this.contentPaddingTop;
 
-      const rowContent = row.getContentArray(columns);
-      for (const { offsetX, content, style, dynamic } of rowContent) {
+      const rowContent = row.getContentArray(
+        containerWidth,
+        this.contentPadding + startAndEnd.start,
+      );
+      for (const { offsetX, content, style, padding, dynamic } of rowContent) {
         if (dynamic) {
           clearLine(currentLine, startAndEnd);
         }
 
         goTo(currentLine, offsetX);
+        print(padding.padStart > 0 ? " ".repeat(padding.padStart) : "");
+
         print(content, style?.color, style);
+        print(padding.padEnd > 0 ? " ".repeat(padding.padEnd) : "");
       }
       if (!this.populatedRows.includes(currentLine)) {
         this.populatedRows.push(currentLine);

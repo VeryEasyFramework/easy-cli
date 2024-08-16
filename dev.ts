@@ -6,6 +6,7 @@ import {
   OptionSelector,
   TypedObjectPrompter,
 } from "./mod.ts";
+import { ActionMenu } from "./src/actionMenu.ts";
 import { listenForInput, printTime } from "./src/cliUtils.ts";
 import { runCommand } from "./src/runCommand.ts";
 import { SearchableList } from "./src/searchableList.ts";
@@ -151,6 +152,25 @@ function generateWordList(length: number) {
   return words;
 }
 
+function actionMenuDemo() {
+  const menu = new ActionMenu("Action Menu", "This is an action menu");
+  menu.addAction({
+    name: "Action 1ssssssdaewfss",
+
+    action: () => {
+      console.log("Action 1");
+    },
+  });
+
+  menu.addAction({
+    name: "Action 2 things",
+    description: "This is action 2",
+    action: () => {
+      console.log("Action 2");
+    },
+  });
+  menu.run();
+}
 function wizardDemo() {
   // const wizard = createWizard();
 }
@@ -164,7 +184,8 @@ if (import.meta.main) {
   // printTime(() => {
   //   return inputString;
   // });
-  easyCliDemo();
+  actionMenuDemo();
+  // easyCliDemo();
   // prompterDemo();
   // typedPrompterDemo();
   // optionSelectorDemo();
