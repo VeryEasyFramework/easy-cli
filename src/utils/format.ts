@@ -56,7 +56,11 @@ export function center(content: string, char?: string, options?: {
     center,
   );
   if (options?.color) {
-    return ColorMe.standard().content(content).color(options.color).format();
+    return ColorMe.chain().content(filler).color(options.color).content(
+      ` ${content} `,
+    ).color(
+      options.color,
+    ).content(filler).end();
   }
   if (options?.contentColor) {
     content = ColorMe.standard().content(content).color(options.contentColor)
