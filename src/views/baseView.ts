@@ -59,23 +59,11 @@ export abstract class BaseView {
   }
 
   private addListeners() {
-    this.listener.doneActions.push(() => {
-      this.doneActions.forEach((action) => {
-        action();
-      });
-    });
+    this.listener.doneActions.push(...this.doneActions);
 
-    this.listener.charActions.push((char) => {
-      this.charActions.forEach((action) => {
-        action(char);
-      });
-    });
+    this.listener.charActions.push(...this.charActions);
 
-    this.listener.lineActions.push((line) => {
-      this.lineActions.forEach((action) => {
-        action(line);
-      });
-    });
+    this.listener.lineActions.push(...this.lineActions);
 
     for (const [key, actions] of Object.entries(this.keyActions)) {
       actions.forEach((action) => {

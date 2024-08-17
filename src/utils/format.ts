@@ -18,8 +18,16 @@ export function getCharCount(content: string): number {
       inAnsi = true;
       continue;
     }
+
     if (bytes[i] >= 0x20 && bytes[i] <= 0x7e) {
       count++;
+    }
+
+    if (bytes[i] == 0xe2) {
+      // if (bytes[i + 1] == 0x80 && bytes[i + 2] == 0x99) {
+      count++;
+      i += 2;
+      // }
     }
   }
 

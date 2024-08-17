@@ -8,7 +8,7 @@ import {
   showCursor,
 } from "#/utils/print.ts";
 
-import { getCenterOffset } from "../utils/format.ts";
+import { getCenterOffset, getCharCount } from "../utils/format.ts";
 import { defaultTheme, type LineStyle, type Theme } from "#/easyCli.ts";
 import { box } from "#/utils/box.ts";
 import type { StyleOptions } from "#/utils/colors.ts";
@@ -21,6 +21,7 @@ import {
   HorizontalAlignment,
   Justify,
 } from "#/renderEngine/renderEngineTypes.ts";
+import { EasyElement } from "#/elements/baseElement.ts";
 
 export class RenderEngine {
   pixels: Array<Array<string>> = [];
@@ -30,6 +31,11 @@ export class RenderEngine {
   contentPadding = 2;
   _height = 20;
   padChar = " ";
+
+  startTime: number = -1;
+  get elapsedTime(): number {
+    return new Date().getTime() - this.startTime;
+  }
 
   get height(): number {
     return this.consoleSize.rows;
@@ -63,6 +69,10 @@ export class RenderEngine {
 
   rows: Array<Row> = [];
   rawElements: Array<Element> = [];
+  easyElements: Array<{
+    row?: number;
+    element: EasyElement;
+  }> = [];
   populatedRows: number[] = [];
   theme: Theme;
 
@@ -99,6 +109,15 @@ export class RenderEngine {
     if (rowElements.length) {
       rowElements[0].justify = justify;
     }
+  }
+  addElement(element: EasyElement, options: {
+    row?: number;
+  }): void {
+    element.init(this.theme);
+    this.easyElements.push({
+      element,
+      row: options.row,
+    });
   }
   createElement(
     content: ElementContent,
@@ -180,6 +199,57 @@ export class RenderEngine {
 
   placeElements(): void {
     goToTop();
+    this.renderRows();
+    this.renderRawElements();
+    this.renderEasyElements();
+  }
+
+  private renderElement(element: EasyElement, row: number) {
+    const content = element.render(this.elapsedTime);
+    if (typeof content === "string") {
+      this.populatedRows.push(row);
+      const previousValue = element.previousValue;
+      const shouldClear = content !== previousValue;
+      if (shouldClear) {
+        if (getCharCount(previousValue) > getCharCount(content)) {
+          this.clearLine(row, {
+            start: 2,
+            end: this.consoleSize.columns - 1,
+          });
+        }
+      }
+      goTo(row, getCenterOffset(content, this.consoleSize.columns));
+
+      element.previousValue = content;
+      this.print(content);
+    }
+    if (Array.isArray(content)) {
+      for (const line of content) {
+        this.populatedRows.push(row);
+        const previousValue = element.previousValue;
+        const shouldClear = line !== previousValue;
+        if (shouldClear) {
+          if (getCharCount(previousValue) > getCharCount(line)) {
+            this.clearLine(row, {
+              start: 2,
+              end: this.consoleSize.columns - 1,
+            });
+          }
+        }
+        goTo(row, getCenterOffset(line, this.consoleSize.columns));
+        this.print(line);
+        row += 1;
+      }
+    }
+  }
+  private renderEasyElements() {
+    const rowOffset = this.contentPaddingTop;
+    for (const item of this.easyElements) {
+      const row = rowOffset + (item.row || 1);
+      this.renderElement(item.element, row);
+    }
+  }
+  private renderRows(): void {
     const { columns } = this.consoleSize;
     const startAndEnd = {
       start: 2,
@@ -215,6 +285,13 @@ export class RenderEngine {
         this.populatedRows.push(currentLine);
       }
     }
+  }
+  private renderRawElements(): void {
+    const { columns } = this.consoleSize;
+    const startAndEnd = {
+      start: 2,
+      end: columns - 1,
+    };
     for (const element of this.rawElements) {
       const content = element.getFormattedContent();
       const shouldClear = element.hasChanged();
@@ -370,6 +447,7 @@ export class RenderEngine {
   }
   async run(): Promise<void> {
     await asyncPause(500);
+    this.startTime = new Date().getTime();
     hideCursor();
     this.clearScreen();
 

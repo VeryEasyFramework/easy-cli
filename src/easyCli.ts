@@ -7,6 +7,9 @@ interface EasyCliOptions {
   appName?: string;
   description?: string;
   theme?: Partial<Theme>;
+  engine?: {
+    refreshRate?: number;
+  };
 }
 
 export type LineStyle =
@@ -38,6 +41,7 @@ export class EasyCli {
   constructor(options?: EasyCliOptions) {
     this.renderEngine = new RenderEngine({
       theme: options?.theme,
+      refreshRate: options?.engine?.refreshRate,
     });
     this.theme = {
       ...defaultTheme,

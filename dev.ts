@@ -5,6 +5,7 @@ import { OutputView } from "./src/views/outputView.ts";
 import { print, println, symbol } from "#/utils/print.ts";
 import { getCharCount } from "#/utils/format.ts";
 import { ColorMe } from "#/utils/colors.ts";
+import { TaskView } from "#/views/taskView.ts";
 
 function toHex(byte: number): string {
   return "0x" + byte.toString(16).padStart(2, "0") + " ";
@@ -46,6 +47,18 @@ function colors() {
   }
   console.log(output);
 }
+
+const thing = "⅑"; //"━";
+
+const encoded = new TextEncoder().encode(thing);
+console.log(encoded);
+console.log(getCharCount(thing));
+
+for (const byte of encoded) {
+  console.log(toHex(byte));
+}
+
+console.log(thing.charCodeAt(0));
 if (import.meta.main) {
   // // colors();
   // const output = ColorMe.chain("rgb").content("hellos!")
@@ -65,10 +78,14 @@ if (import.meta.main) {
   // console.log(colorHex("Hello, World!", "61A8BC"));
   const cli = new EasyCli({
     appName: "My App",
+
     description: "This is a description",
     theme: {
       primaryColor: "brightCyan",
       lineStyle: "thick",
+    },
+    engine: {
+      refreshRate: 5,
     },
   });
 
@@ -80,11 +97,22 @@ if (import.meta.main) {
       console.log("Action 1");
     },
   });
-  const outputView = new OutputView();
   cli.addView(menuView, "menu");
-  cli.addView(outputView, "output");
-
+  const taskView = new TaskView();
+  taskView.addTask("Pull Git", {
+    action: ({ fail, output, success }) => {
+      setTimeout(() => {
+        output("Pulling Git...");
+        setTimeout(() => {
+          output("Git Pulled!");
+          success();
+        }, 3000);
+      }, 3000);
+    },
+  });
+  cli.addView(taskView, "task");
   cli.run();
 
-  cli.changeView("menu");
+  cli.changeView("task");
+  taskView.start();
 }
