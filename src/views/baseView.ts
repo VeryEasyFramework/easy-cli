@@ -3,9 +3,11 @@ import type { RenderEngine } from "../renderEngine/render.ts";
 import { type Char, keyMap, type KeyStroke } from "#/utils/keyMap.ts";
 import { camelToTitleCase } from "@vef/string-utils";
 import type { EasyCli, Theme } from "#/easyCli.ts";
+import { ClockElement } from "#/elements/clockElement.ts";
 
 export abstract class BaseView {
   engine!: RenderEngine;
+  clock: ClockElement = new ClockElement();
   listener!: InputListener;
 
   keyActions: Record<string, Array<() => void>> = {};
@@ -45,6 +47,7 @@ export abstract class BaseView {
       camelToTitleCase(Object.getPrototypeOf(this).constructor.name);
     this.description = description || "";
   }
+
   init(
     cli: any,
     renderEngine: RenderEngine,

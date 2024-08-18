@@ -1,6 +1,11 @@
 import { StyleOptions } from "#/utils/colors.ts";
 
-export type HorizontalAlignment = "start" | "end" | "center";
+export type HorizontalAlignment =
+  | "start"
+  | "end"
+  | "center"
+  | "start-edge"
+  | "end-edge";
 export type Justify =
   | "start"
   | "end"

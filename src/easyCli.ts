@@ -2,6 +2,7 @@ import { RenderEngine } from "./renderEngine/render.ts";
 import { InputListener } from "#/utils/inputListener.ts";
 import type { BaseView } from "#/views/baseView.ts";
 import type { BasicBgColor, BasicFgColor } from "#/utils/colors.ts";
+import { clearScreen, goToTop } from "#/utils/print.ts";
 
 interface EasyCliOptions {
   appName?: string;
@@ -25,6 +26,13 @@ export interface Theme {
   lineStyle: LineStyle;
 }
 
+interface EasyAbortSignal extends AbortSignal {
+  reason: {
+    name: string;
+    message: string;
+  };
+}
+
 export const defaultTheme: Theme = {
   lineStyle: "thick",
   primaryColor: "brightCyan",
@@ -36,6 +44,8 @@ export class EasyCli {
   private renderEngine: RenderEngine;
   private listener: InputListener;
   private views: Record<string, BaseView> = {} as Record<string, BaseView>;
+  abortController: AbortController;
+  abortSignal: EasyAbortSignal;
 
   private currentView?: BaseView;
   constructor(options?: EasyCliOptions) {
@@ -47,7 +57,13 @@ export class EasyCli {
       ...defaultTheme,
       ...options?.theme,
     };
-    this.listener = new InputListener();
+    this.abortController = new AbortController();
+
+    this.abortSignal = this.abortController.signal;
+    this.listener = new InputListener({
+      abortController: this.abortController,
+      hideCursor: true,
+    });
     this.appName = options?.appName || "Easy CLI";
   }
   addView(view: BaseView, key: string) {
@@ -65,6 +81,22 @@ export class EasyCli {
     this.listener.stop();
   }
   run() {
+    this.abortSignal.addEventListener("abort", () => {
+      this.stop();
+      clearScreen();
+      goToTop();
+      switch (this.abortSignal.reason.name) {
+        case "HardInterrupt":
+          console.log("Exiting due to Ctrl+C");
+          break;
+        case "SoftInterrupt":
+          console.log("Exiting due to Escape");
+          break;
+        default:
+          console.log("Exiting due to unknown reason");
+      }
+      Deno.exit();
+    });
     this.listener.listen();
     this.renderEngine.run();
   }

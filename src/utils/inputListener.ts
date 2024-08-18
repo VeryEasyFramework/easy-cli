@@ -3,8 +3,9 @@ import { Char, keyMap, type KeyStroke } from "./keyMap.ts";
 import { println } from "./print.ts";
 
 export class InputListener {
-  hideCursor: boolean;
+  hideCursor: boolean = true;
   decoder: TextDecoder = new TextDecoder();
+  abortController: AbortController;
 
   keyActions: Record<string, Array<() => void>> = {};
   charActions: Array<(char: Char) => void> = [];
@@ -19,8 +20,14 @@ export class InputListener {
     return this.decoder.decode(data);
   }
 
-  constructor(hideCursor = true) {
-    this.hideCursor = hideCursor;
+  constructor(options?: {
+    hideCursor?: boolean;
+    abortController?: AbortController;
+  }) {
+    if (options?.hideCursor === false) {
+      this.hideCursor = false;
+    }
+    this.abortController = options?.abortController || new AbortController();
     this.setUpListeners();
   }
 
@@ -30,6 +37,7 @@ export class InputListener {
     }
 
     this.input.releaseLock();
+    showCursor();
     this.done = true;
     this.doneActions.forEach((action) => {
       action();
@@ -37,10 +45,19 @@ export class InputListener {
   }
   setUpListeners(): void {
     this.on("ctrlC", () => {
-      showCursor();
-      Deno.exit();
+      this.abortController.abort({
+        name: "HardInterrupt",
+        message: "User pressed Ctrl+C to exit the program",
+      });
     });
-
+    this.on("escape", () => {
+      this.abortController.abort(
+        {
+          name: "SoftInterrupt",
+          message: "User pressed escape to exit the program",
+        },
+      );
+    });
     this.on("enter", () => {
       this.lineActions.forEach((action) => {
         action(this.lineBuffer);
@@ -124,29 +141,11 @@ export class InputListener {
     try {
       Deno.stdin.setRaw(true);
       this.input = Deno.stdin.readable.getReader();
+      this.setUpListeners();
       await this.readInput();
     } catch (e) {
       println("Error reading input", "brightRed");
       console.error(e);
     }
   }
-}
-
-export function listenerDemo() {
-  const listener = new InputListener();
-  const listener2 = new InputListener();
-  listener.onLine((line) => {
-    println(line, "brightBlue");
-  });
-
-  listener2.onLine((line) => {
-    println(line, "brightYellow");
-  });
-  listener.on("down", () => {
-    listener.stop();
-  });
-
-  listener.listen();
-
-  console.log("Listening for input...");
 }

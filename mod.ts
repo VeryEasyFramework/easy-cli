@@ -1,6 +1,6 @@
 export { MenuView } from "#/views/menuView.ts";
 export { OutputView } from "#/views/outputView.ts";
-
+export { TaskView } from "#/views/taskView.ts";
 export { EasyCli } from "#/easyCli.ts";
 
 export { ObjectPrompter } from "./src/objectPrompter.ts";

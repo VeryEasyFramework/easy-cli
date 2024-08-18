@@ -1,8 +1,15 @@
 import { BaseElement } from "#/elements/baseElement.ts";
 
 export class ClockElement extends BaseElement {
-  render(time: number): string {
+  setup() {
+    this.width = 10;
+    this.height = 1;
+  }
+  render(time: number): string[] {
     const date = new Date().toLocaleTimeString();
-    return date;
+
+    const content = this.drawBox(date);
+
+    return content;
   }
 }

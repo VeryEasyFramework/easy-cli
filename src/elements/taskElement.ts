@@ -65,6 +65,9 @@ export class TaskElement extends BaseElement {
     this.taskName = taskName;
   }
 
+  setup(): void {
+  }
+
   render(elapsedTime: number): string {
     const statusSymbol = this.statusSymbol as string;
     const status = ColorMe.fromOptions(` ${statusSymbol} `, {

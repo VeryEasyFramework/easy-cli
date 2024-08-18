@@ -109,6 +109,7 @@ if (import.meta.main) {
         }, 3000);
       }, 3000);
     },
+    style: "loop",
   });
   cli.addView(taskView, "task");
   cli.run();

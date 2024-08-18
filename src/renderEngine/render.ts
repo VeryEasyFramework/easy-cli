@@ -71,6 +71,7 @@ export class RenderEngine {
   rawElements: Array<Element> = [];
   easyElements: Array<{
     row?: number;
+    justify?: HorizontalAlignment;
     element: EasyElement;
   }> = [];
   populatedRows: number[] = [];
@@ -112,11 +113,13 @@ export class RenderEngine {
   }
   addElement(element: EasyElement, options: {
     row?: number;
+    justify?: HorizontalAlignment;
   }): void {
-    element.init(this.theme);
+    element.init(this.theme, this);
     this.easyElements.push({
       element,
       row: options.row,
+      justify: options.justify,
     });
   }
   createElement(
@@ -204,26 +207,39 @@ export class RenderEngine {
     this.renderEasyElements();
   }
 
-  private renderElement(element: EasyElement, row: number) {
-    const content = element.render(this.elapsedTime);
-    if (typeof content === "string") {
-      this.populatedRows.push(row);
-      const previousValue = element.previousValue;
-      const shouldClear = content !== previousValue;
-      if (shouldClear) {
-        if (getCharCount(previousValue) > getCharCount(content)) {
-          this.clearLine(row, {
-            start: 2,
-            end: this.consoleSize.columns - 1,
-          });
-        }
-      }
-      goTo(row, getCenterOffset(content, this.consoleSize.columns));
+  private renderElement(element: EasyElement, options: {
+    row: number;
+    justify?: HorizontalAlignment;
+  }) {
+    let row = options.row;
+    const content = element.getContent(this.elapsedTime);
+    // if (typeof content === "string") {
+    //   this.populatedRows.push(row);
+    //   const previousValue = element.previousValue;
+    //   const shouldClear = content !== previousValue;
+    //   if (shouldClear) {
+    //     if (getCharCount(previousValue) > getCharCount(content)) {
+    //       this.clearLine(row, {
+    //         start: 2,
+    //         end: this.consoleSize.columns - 1,
+    //       });
+    //     }
+    //   }
+    //   const justify = options.justify || "center";
+    //   let offset = 0;
 
-      element.previousValue = content;
-      this.print(content);
-    }
+    //   if (justify === "center") {
+    //     offset = getCenterOffset(content, this.consoleSize.columns);
+    //   }
+    //   goTo(row, offset);
+
+    //   element.previousValue = content;
+    //   this.print(content);
+    // }
     if (Array.isArray(content)) {
+      const justify = options.justify || "center";
+      let offset = 0;
+
       for (const line of content) {
         this.populatedRows.push(row);
         const previousValue = element.previousValue;
@@ -236,7 +252,26 @@ export class RenderEngine {
             });
           }
         }
-        goTo(row, getCenterOffset(line, this.consoleSize.columns));
+        switch (justify) {
+          case "center":
+            offset = getCenterOffset(line, this.consoleSize.columns);
+            break;
+          case "start":
+            offset = this.contentPadding;
+            break;
+          case "end":
+            offset = this.consoleSize.columns - getCharCount(line) -
+              this.contentPadding;
+            break;
+          case "start-edge":
+            offset = 0;
+            break;
+          case "end-edge":
+            offset = this.consoleSize.columns - getCharCount(line) + 1;
+            break;
+        }
+
+        goTo(row, offset);
         this.print(line);
         row += 1;
       }
@@ -246,7 +281,7 @@ export class RenderEngine {
     const rowOffset = this.contentPaddingTop;
     for (const item of this.easyElements) {
       const row = rowOffset + (item.row || 1);
-      this.renderElement(item.element, row);
+      this.renderElement(item.element, { row, justify: item.justify });
     }
   }
   private renderRows(): void {
@@ -442,6 +477,7 @@ export class RenderEngine {
     this.rows = [];
     this.rawElements = [];
     this.populatedRows = [];
+    this.easyElements = [];
     this.clearScreen();
     this.renderFrame();
   }
