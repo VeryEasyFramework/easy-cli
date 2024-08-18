@@ -4,18 +4,45 @@ import { box } from "#/utils/box.ts";
 import { ColorMe } from "../../mod.ts";
 import { getCharCount } from "#/utils/format.ts";
 import { HorizontalAlignment } from "#/renderEngine/renderEngineTypes.ts";
+import { InputListener } from "#/utils/inputListener.ts";
 
+type TypeOrFunc<T> = T | (() => T);
+function typeOrFunction<T extends string | number>(
+  value: T | (() => T),
+): T {
+  if (typeof value === "function") {
+    return value() as T;
+  }
+  return value as T;
+}
 export abstract class BaseElement {
   previousValue: string = "";
+  previousTime: number = 0;
   theme: Theme = defaultTheme;
-  width: number = 10;
-  height: number = 10;
+  _width: TypeOrFunc<number> = 10;
+  set width(value: TypeOrFunc<number>) {
+    this._width = value;
+  }
+
+  get width(): number {
+    return typeOrFunction(this._width);
+  }
+
+  _height: TypeOrFunc<number> = 10;
+  set height(value: TypeOrFunc<number>) {
+    this._height = value;
+  }
+  get height(): number {
+    return typeOrFunction(this._height);
+  }
+
   engine!: RenderEngine;
+  listener?: InputListener;
 
   _content: string[] = [];
 
   getContent(elapsedTime: number) {
-    const content = this.render(elapsedTime);
+    const content = this._render(elapsedTime);
     switch (typeof content) {
       case "string":
         this._content = [content];
@@ -40,6 +67,7 @@ export abstract class BaseElement {
       this.theme.backgroundColor,
     ).end();
   }
+
   drawBox(content?: string | string[], options?: {
     height?: number;
     width?: number;
@@ -99,10 +127,17 @@ export abstract class BaseElement {
   init(theme: Theme, engine: RenderEngine) {
     this.theme = theme;
     this.engine = engine;
+    this.listener = engine.listener;
     this.setup();
   }
   abstract setup(): void;
-  abstract render(elapsedTime: number): string | string[];
+  abstract render(elapsedTime: number, diff: number): string | string[];
+
+  _render(elapsedTime: number): string | string[] {
+    const diff = elapsedTime - this.previousTime;
+    this.previousTime = elapsedTime;
+    return this.render(elapsedTime, diff);
+  }
 }
 
 export type EasyElement = BaseElement;

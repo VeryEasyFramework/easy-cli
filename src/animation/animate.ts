@@ -1,19 +1,39 @@
 export class Animation {
   duration: number;
   previousTime: number;
-  frames: string[];
+  frames?: string[];
   current: number;
-  type: "loop" | "bounce" | "reverse" = "loop";
+  type: "loop" | "bounce" | "reverse" | "once" = "loop";
   bezier: [number, number, number, number];
   easing: "linear" | "ease-in" | "ease-out" | "ease-in-out" | "bezier";
   direction: "forward" | "backward" = "forward";
   startTime: number = 0;
 
+  maxFrames: number;
+  static easingCurves = {
+    bezier: [0.4, 0.0, 0.2, 1],
+    snapEase: [0.75, 0.1, 0.25, 1],
+    easeIn: [0.42, 0, 1, 1],
+    easeOut: [0, 0, 0.58, 1],
+    easeInOut: [0.42, 0, 0.58, 1],
+    smooth: [0.30, 0, 0.05, 1],
+    linear: [0, 0, 1, 1],
+  } as Record<
+    | "bezier"
+    | "snapEase"
+    | "easeIn"
+    | "easeOut"
+    | "easeInOut"
+    | "linear"
+    | "smooth",
+    [number, number, number, number]
+  >;
   constructor(
     options: {
       duration: number;
-      frames: string[];
-      type?: "loop" | "bounce" | "reverse";
+      frames?: string[];
+      maxFrames?: number;
+      type?: "loop" | "bounce" | "reverse" | "once";
       bezier?: [number, number, number, number];
       easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out" | "bezier";
     },
@@ -22,12 +42,12 @@ export class Animation {
     this.previousTime = 0;
     this.direction = "forward";
     this.bezier = options.bezier || [0, 0, 1, 1];
-
+    this.maxFrames = options.maxFrames || options.frames?.length || 0;
     this.frames = options.frames;
     this.current = 0;
     this.easing = options.easing || "linear";
     this.type = options.type || "loop";
-    if (this.type === "bounce") {
+    if (this.type === "bounce" && this.frames) {
       const reversed = this.frames.slice(0, -1).reverse();
       this.frames = [...this.frames, ...reversed];
     }
@@ -68,13 +88,13 @@ export class Animation {
     t3 = t2 * x;
     return ay * t3 + by * t2 + cy * x;
   }
-
+  time = 0;
   animate(elapsedTime: number) {
-    // if (this.startTime === 0) {
-    //   this.playForward(elapsedTime);
-    // }
+    if (this.startTime === 0) {
+      this.playForward(elapsedTime);
+    }
+    this.time = elapsedTime - this.startTime;
 
-    let time = elapsedTime - this.startTime;
     // switch (this.type) {
     //   case "bounce": {
     //     time = time % (this.duration * 2);
@@ -85,6 +105,7 @@ export class Animation {
     //   }
     //   case "reverse": {
     //     time = time % (this.duration * 2);
+
     //     if (time > this.duration) {
     //       time = this.duration - (time - this.duration);
     //     }
@@ -95,13 +116,16 @@ export class Animation {
     //     break;
     //   }
     // }
-    if (time > this.duration) {
+    if (this.time > this.duration) {
+      if (this.type === "once") {
+        return this.current;
+      }
       this.startTime = elapsedTime;
-      time = 0;
+      this.time = 0;
       // this.direction = this.direction === "forward" ? "backward" : "forward";
     }
-    const progress = this.calculateFrame(time);
-    const frameCount = this.frames.length;
+    const progress = this.calculateFrame(this.time);
+    const frameCount = this.maxFrames;
     const frame = Math.floor(progress * frameCount);
     if (this.direction === "forward") {
       this.current = frame % frameCount;
@@ -115,6 +139,6 @@ export class Animation {
   }
 
   get frame() {
-    return this.frames[this.current];
+    return this.frames ? [this.current] : this.current;
   }
 }

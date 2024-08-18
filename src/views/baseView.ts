@@ -7,7 +7,7 @@ import { ClockElement } from "#/elements/clockElement.ts";
 
 export abstract class BaseView {
   engine!: RenderEngine;
-  clock: ClockElement = new ClockElement();
+  clock?: ClockElement;
   listener!: InputListener;
 
   keyActions: Record<string, Array<() => void>> = {};
@@ -40,12 +40,19 @@ export abstract class BaseView {
     return `${this.appName} - ${this.title}`;
   }
   constructor(
-    title?: string,
-    description?: string,
+    options?: {
+      title?: string;
+      description?: string;
+      clock?: boolean;
+    },
   ) {
+    const { title, description, clock } = options || {};
     this.title = title ||
       camelToTitleCase(Object.getPrototypeOf(this).constructor.name);
     this.description = description || "";
+    if (clock) {
+      this.clock = new ClockElement();
+    }
   }
 
   init(
@@ -91,6 +98,12 @@ export abstract class BaseView {
   }
 
   private _build() {
+    if (this.clock) {
+      this.engine.addElement(this.clock, {
+        row: -2,
+        justify: "end-edge",
+      });
+    }
     this.engine.createElement(() => {
       return this.menuTitle;
     }, {

@@ -26,6 +26,19 @@ export class TaskView extends BaseView {
 
   tasks: Task[] = [];
   doneActions: Array<() => void> = [];
+
+  constructor(options?: {
+    title?: string;
+    description?: string;
+    clock?: boolean;
+  }) {
+    super({
+      title: "Task View",
+      description: "Running tasks",
+      clock: true,
+      ...options,
+    });
+  }
   addTask(taskName: string, options?: AddTaskOptions & TaskElementOptions) {
     const taskElement = new TaskElement(taskName, options);
     const task: Task = {
@@ -62,8 +75,9 @@ export class TaskView extends BaseView {
   onDone(callback: () => void) {
     this.doneActions.push(callback);
   }
+  scroll: number = 0;
   done() {
-    this.engine.createElement("All Done! Press enter to continue...", {
+    this.engine.createElement("All done! Press 'Enter' to continue...", {
       row: this.startRow + this.tasks.length + 1,
       align: "center",
       style: {
@@ -71,30 +85,44 @@ export class TaskView extends BaseView {
         bold: true,
       },
     });
+    this.listener.on("down", () => {
+      this.scroll++;
+      this.outputElement.scrollDown();
+    });
+    this.listener.on("up", () => {
+      this.scroll--;
+      this.outputElement.scrollUp();
+    });
+
     this.listener.on("enter", () => {
       this.doneActions.forEach((action) => {
         action();
       });
     });
   }
+
+  calculateSize() {
+  }
   setup(): void {
-    this.outputElement.width = this.engine.currentWidth -
-      this.engine.contentPadding - 4;
-    this.outputElement.height = this.engine.currentHeight - 2 - this.startRow -
-      this.engine.contentPadding - this.tasks.length - 4;
   }
 
   addOutputElement() {
+    this.outputElement.width = (): number => {
+      return this.engine.currentWidth -
+        this.engine.contentPadding - 4;
+    };
+    this.outputElement.height = (): number => {
+      return this.engine.currentHeight - 2 - this.startRow -
+        this.engine.contentPadding - this.tasks.length - 4;
+    };
     this.engine.addElement(this.outputElement, {
       row: this.startRow + this.tasks.length + 3,
       justify: "center",
     });
   }
   build() {
-    this.engine.addElement(this.clock, {
-      row: -2,
-      justify: "end-edge",
-    });
+    this.calculateSize();
+
     this.tasks.forEach((task, index) => {
       this.engine.addElement(task.element, {
         row: this.startRow + index,

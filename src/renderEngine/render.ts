@@ -22,6 +22,7 @@ import {
   Justify,
 } from "#/renderEngine/renderEngineTypes.ts";
 import { EasyElement } from "#/elements/baseElement.ts";
+import { InputListener } from "#/utils/inputListener.ts";
 
 export class RenderEngine {
   pixels: Array<Array<string>> = [];
@@ -77,6 +78,7 @@ export class RenderEngine {
   populatedRows: number[] = [];
   theme: Theme;
 
+  listener: InputListener;
   get width(): number {
     return this._width;
   }
@@ -88,11 +90,15 @@ export class RenderEngine {
       height?: number;
       width?: number;
       elements?: Array<Element>;
+      listener?: InputListener;
     },
   ) {
     this._width = 0;
     this._height = options?.height || this.height;
 
+    this.refreshRate = options?.refreshRate || this.refreshRate;
+
+    this.listener = options?.listener || new InputListener();
     this.theme = {
       ...defaultTheme,
       ...options?.theme,
