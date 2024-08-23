@@ -27,6 +27,12 @@ export class TaskView extends BaseView {
   tasks: Task[] = [];
   doneActions: Array<() => void> = [];
 
+  startActions: Array<() => Promise<void> | void> = [];
+
+  onStart(callback: () => Promise<void> | void) {
+    this.startActions.push(callback);
+  }
+
   constructor(options?: {
     title?: string;
     description?: string;
@@ -67,10 +73,13 @@ export class TaskView extends BaseView {
     };
     this.tasks.push(task);
   }
-  start() {
-    this.tasks.forEach(async (task) => {
+  async start() {
+    for (const action of this.startActions) {
+      await action();
+    }
+    for (const task of this.tasks) {
       await task.action();
-    });
+    }
   }
   onDone(callback: () => void) {
     this.doneActions.push(callback);

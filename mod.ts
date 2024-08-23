@@ -1,3 +1,5 @@
+export { InputListener } from "#/utils/inputListener.ts";
+
 export { MenuView } from "#/views/menuView.ts";
 export { OutputView } from "#/views/outputView.ts";
 export { TaskView } from "#/views/taskView.ts";
