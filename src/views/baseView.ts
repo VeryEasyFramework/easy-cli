@@ -104,28 +104,30 @@ export abstract class BaseView {
         justify: "end-edge",
       });
     }
-    this.engine.createElement(() => {
-      return this.menuTitle;
-    }, {
-      row: 1,
-      align: "center",
-      style: {
-        color: "brightCyan",
-        bold: true,
-        underline: true,
-      },
-    });
-    if (this.description) {
-      this.engine.createElement(() => {
-        return this.description!;
-      }, {
-        row: this.startRow - 2,
+    this.engine.createElement(
+      this.menuTitle,
+      {
+        row: 1,
         align: "center",
         style: {
-          color: "brightWhite",
-          italic: true,
+          color: "brightCyan",
+          bold: true,
+          underline: true,
         },
-      });
+      },
+    );
+    if (this.description) {
+      this.engine.createElement(
+        this.description,
+        {
+          row: this.startRow - 2,
+          align: "center",
+          style: {
+            color: "brightWhite",
+            italic: true,
+          },
+        },
+      );
     }
     this.build();
   }
