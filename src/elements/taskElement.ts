@@ -18,6 +18,7 @@ export interface TaskElementOptions {
 export class TaskElement extends BaseElement {
   taskName: string;
   messages: TaskMessages;
+  progress: number = 0;
 
   loader: Loader;
 

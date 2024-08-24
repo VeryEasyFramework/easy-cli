@@ -27,7 +27,13 @@ export function getCharCount(content: string): number {
       // if (bytes[i + 1] == 0x80 && bytes[i + 2] == 0x99) {
       count++;
       i += 2;
+      continue;
       // }
+    }
+
+    if (bytes[i] == 0xf0) {
+      count++;
+      i += 3;
     }
   }
 

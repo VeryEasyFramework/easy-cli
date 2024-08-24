@@ -1,3 +1,5 @@
+import { print } from "#/utils/print.ts";
+
 export class ColorMe {
   private mode: "chain" | "standard";
 
@@ -110,6 +112,9 @@ export class ColorMe {
     if (!color) {
       return "";
     }
+    if (typeof color === "string" && color.startsWith("bg")) {
+      return basicBgColors[color as BasicBgColor] || "40";
+    }
     switch (this.colorMode) {
       case "basic":
         if (typeof color !== "string") {
@@ -205,9 +210,10 @@ export class ColorMe {
 
     return `${ansiCode}${content}\x1b[0m`;
   }
-  end() {
+  end(noClear?: boolean) {
     this._contentArray[this.currentContentIndex] = this.format();
-    return this._contentArray.join("") + "\x1b[0m";
+    const clear = "\x1b[0m";
+    return this._contentArray.join("") + (noClear ? "" : clear);
   }
 }
 
@@ -281,3 +287,35 @@ export type BasicFgColor = keyof typeof basicFgColors;
 export type BasicBgColor = keyof typeof basicBgColors;
 
 export type BasicStyle = keyof typeof basicStyles;
+
+function cycleColors() {
+  const color = (rgb: [number, number, number]) => {
+    const thing = ColorMe.standard("rgb").content("█").color(rgb).end();
+    print(thing);
+  };
+  for (let i = 0; i < 256; i++) {
+    color([i, 0, 0]);
+  }
+  for (let i = 0; i < 256; i++) {
+    color([255, i, 0]);
+  }
+
+  for (let i = 255; i > 0; i--) {
+    color([i, 255, 0]);
+  }
+
+  for (let i = 0; i < 256; i++) {
+    color([0, 255, i]);
+  }
+  for (let i = 255; i > 0; i--) {
+    color([0, i, 255]);
+  }
+
+  for (let i = 0; i < 256; i++) {
+    color([i, 0, 255]);
+  }
+
+  for (let i = 0; i < 256; i++) {
+    color([255, i, 255]);
+  }
+}

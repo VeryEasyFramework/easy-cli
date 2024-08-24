@@ -1,10 +1,8 @@
 import { BaseView } from "#/views/baseView.ts";
-import { ClockElement } from "#/elements/clockElement.ts";
 import {
   TaskElement,
   type TaskElementOptions,
 } from "#/elements/taskElement.ts";
-import { ColorMe } from "../../mod.ts";
 import { OutputElement } from "#/elements/outputElement.ts";
 
 interface Task {
@@ -17,6 +15,7 @@ interface AddTaskOptions {
   action: (callbacks: {
     output: (data: string | string[]) => void;
     fail: () => void;
+    progress: (progress: number) => void;
     success: () => void;
   }) => Promise<void> | void;
 }
@@ -64,6 +63,9 @@ export class TaskView extends BaseView {
           },
           fail: () => {
             taskElement.fail();
+          },
+          progress: (progress: number) => {
+            taskElement.progress = progress;
           },
           success: () => {
             taskElement.done();

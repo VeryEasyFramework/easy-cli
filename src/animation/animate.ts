@@ -89,6 +89,7 @@ export class Animation {
     return ay * t3 + by * t2 + cy * x;
   }
   time = 0;
+  private _done = false;
   animate(elapsedTime: number) {
     if (this.startTime === 0) {
       this.playForward(elapsedTime);
@@ -118,6 +119,7 @@ export class Animation {
     // }
     if (this.time > this.duration) {
       if (this.type === "once") {
+        this._done = true;
         return this.current;
       }
       this.startTime = elapsedTime;
@@ -138,6 +140,9 @@ export class Animation {
     this.direction = "forward";
   }
 
+  get done() {
+    return this.current >= this.maxFrames - 1 || this._done;
+  }
   get frame() {
     return this.frames ? [this.current] : this.current;
   }
