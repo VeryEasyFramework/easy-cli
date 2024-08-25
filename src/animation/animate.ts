@@ -144,6 +144,6 @@ export class Animation {
     return this.current >= this.maxFrames - 1 || this._done;
   }
   get frame() {
-    return this.frames ? [this.current] : this.current;
+    return this.frames ? this.frames[this.current] : this.current;
   }
 }

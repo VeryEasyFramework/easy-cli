@@ -47,8 +47,8 @@ export class MenuView extends BaseView {
     id: "",
     descriptionId: "",
     description: "Exit the application",
-    action: async () => {
-      await this.cli.stop();
+    action: () => {
+      this.cli.stop();
     },
   };
   setExitAction(action: AddActionOptions) {
@@ -97,6 +97,7 @@ export class MenuView extends BaseView {
       descriptionId: "",
     });
   }
+
   private addDivider(row: number) {
     return this.engine.createElement(
       `  ${box[this.theme.lineStyle].vertical}  `,
@@ -185,6 +186,7 @@ export class MenuView extends BaseView {
     });
   }
   build() {
+    this.currentSelection = 1;
     this.setMaxCharsLength();
     this.engine.createElement(
       this.instructions,
@@ -262,6 +264,6 @@ export class MenuView extends BaseView {
         italic: true,
       },
     });
-    this.setActiveItem(0, 0);
+    this.setActiveItem(0, this.currentSelection);
   }
 }
