@@ -53,14 +53,14 @@ export class Animation {
     }
   }
 
-  calculateFrame(elapsedTime: number) {
+  calculateFrame(elapsedTime: number): number {
     if (this.easing === "bezier") {
       return this.bezierEasing(elapsedTime);
     }
     return elapsedTime / this.duration;
   }
 
-  bezierEasing(elapsedTime: number) {
+  bezierEasing(elapsedTime: number): number {
     const [x1, y1, x2, y2] = this.bezier;
     const t = elapsedTime / this.duration;
     const cx = 3 * x1;
@@ -90,7 +90,7 @@ export class Animation {
   }
   time = 0;
   private _done = false;
-  animate(elapsedTime: number) {
+  animate(elapsedTime: number): void {
     if (this.startTime === 0) {
       this.playForward(elapsedTime);
     }
@@ -120,7 +120,6 @@ export class Animation {
     if (this.time > this.duration) {
       if (this.type === "once") {
         this._done = true;
-        return this.current;
       }
       this.startTime = elapsedTime;
       this.time = 0;
@@ -140,10 +139,10 @@ export class Animation {
     this.direction = "forward";
   }
 
-  get done() {
+  get done(): boolean {
     return this.current >= this.maxFrames - 1 || this._done;
   }
-  get frame() {
+  get frame(): string | number {
     return this.frames ? this.frames[this.current] : this.current;
   }
 }

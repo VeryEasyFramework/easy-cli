@@ -21,7 +21,7 @@ interface AddTaskOptions {
 }
 export class TaskView extends BaseView {
   output: string[] = [];
-  outputElement = new OutputElement();
+  outputElement: OutputElement = new OutputElement();
   status: "pending" | "running" | "done" = "pending";
 
   tasks: Task[] = [];

@@ -27,7 +27,7 @@ export class OutputElement extends BaseElement {
     start: 0,
     end: 0,
   };
-  get contentHeight() {
+  get contentHeight(): number {
     return this.contentRows.length;
   }
 
@@ -39,12 +39,12 @@ export class OutputElement extends BaseElement {
     this.resetScroll();
     this.direction = "down";
   }
-  resetScroll() {
+  resetScroll(): void {
     this.scrolling = true;
     this.animate.current = 0;
     this.animate.startTime = 0;
   }
-  scrollUp() {
+  scrollUp(): void {
     if (this.scrolling) return;
 
     this.resetScroll();
@@ -54,12 +54,12 @@ export class OutputElement extends BaseElement {
   duration: number = 1000;
   offset: number = 0;
   scrollSpeed: number = 1;
-  getSpeed(multiplier: number) {
+  getSpeed(multiplier: number): number {
     return 1 * multiplier;
   }
   startTime: number = 0;
 
-  setScroll() {
+  setScroll(): void {
     if (this.direction === "down") {
       if (
         this.scroll + this.animate.current >= this.contentHeight - this.height
@@ -101,7 +101,7 @@ export class OutputElement extends BaseElement {
   }
   elapsedTime: number = 0;
 
-  animate = new Animation({
+  animate: Animation = new Animation({
     duration: this.duration,
     easing: "bezier",
 

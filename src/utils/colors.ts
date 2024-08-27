@@ -66,36 +66,36 @@ export class ColorMe {
     this.styleOptions.bgColor = color;
     return this;
   }
-  bold(bold = true) {
+  bold(bold = true): ColorMe {
     this.styleOptions.bold = bold;
     return this;
   }
-  italic(italic = true) {
+  italic(italic = true): ColorMe {
     this.styleOptions.italic = italic;
     return this;
   }
 
-  underline(underline = true) {
+  underline(underline = true): ColorMe {
     this.styleOptions.underline = underline;
     return this;
   }
-  inverse(inverse = true) {
+  inverse(inverse = true): ColorMe {
     this.styleOptions.inverse = inverse;
     return this;
   }
-  strikethrough(strikethrough = true) {
+  strikethrough(strikethrough = true): ColorMe {
     this.styleOptions.strikethrough = strikethrough;
     return this;
   }
-  blink() {
+  blink(): ColorMe {
     this.styleOptions.blink = true;
     return this;
   }
-  dim(dim = true) {
+  dim(dim = true): ColorMe {
     this.styleOptions.dim = dim;
     return this;
   }
-  reset() {
+  reset(): ColorMe {
     this.styleOptions = {
       color: "white",
       bold: false,
@@ -181,11 +181,11 @@ export class ColorMe {
       }
     }
   }
-  private getAnsiCode() {
+  private getAnsiCode(): string {
     const colorCode = this.getColorCode(this.styleOptions.color);
     const bgColorCode = this.getBgColorCode(this.styleOptions.bgColor);
 
-    let output = "";
+    let output: string = "";
     const prefix = "\x1b[";
     if (colorCode) {
       output += `${prefix}${colorCode}m`;
@@ -200,7 +200,7 @@ export class ColorMe {
     }
     return output;
   }
-  format() {
+  format(): string {
     const content = this._contentArray[this.currentContentIndex];
     const ansiCode = this.getAnsiCode();
 
@@ -210,7 +210,7 @@ export class ColorMe {
 
     return `${ansiCode}${content}\x1b[0m`;
   }
-  end(noClear?: boolean) {
+  end(noClear?: boolean): string {
     this._contentArray[this.currentContentIndex] = this.format();
     const clear = "\x1b[0m";
     return this._contentArray.join("") + (noClear ? "" : clear);

@@ -41,7 +41,7 @@ export abstract class BaseElement {
 
   _content: string[] = [];
 
-  getContent(elapsedTime: number) {
+  getContent(elapsedTime: number): string[] {
     const content = this._render(elapsedTime);
     switch (typeof content) {
       case "string":
@@ -53,16 +53,16 @@ export abstract class BaseElement {
     }
     return this._content;
   }
-  get contentWidth() {
+  get contentWidth(): number {
     return Math.max(...this._content.map((c) => getCharCount(c)));
   }
 
-  private colorTheme(content: string) {
+  private colorTheme(content: string): string {
     return ColorMe.standard().content(content).color(
       this.theme.primaryColor,
     ).bgColor(this.theme.backgroundColor).end();
   }
-  private colorBgTheme(content: string) {
+  private colorBgTheme(content: string): string {
     return ColorMe.standard().content(content).bgColor(
       this.theme.backgroundColor,
     ).end();
@@ -72,7 +72,7 @@ export abstract class BaseElement {
     height?: number;
     width?: number;
     justify?: HorizontalAlignment;
-  }) {
+  }): string[] {
     let width = options?.width || this.width + 2;
     let height = options?.height || this.height;
     if (content) {

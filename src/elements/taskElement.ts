@@ -40,9 +40,9 @@ export class TaskElement extends BaseElement {
   get status(): TaskStatus {
     return this._status;
   }
-  get statusSymbol() {
+  get statusSymbol(): string {
     const icon = symbol[this.statusSymbolMap[this._status]];
-    return icon;
+    return icon as string;
   }
   constructor(taskName: string, options?: TaskElementOptions) {
     super();

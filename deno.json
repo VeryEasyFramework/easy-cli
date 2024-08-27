@@ -15,6 +15,7 @@
     ]
   },
   "tasks": {
-    "dev": "deno run -A dev.ts"
+    "dev": "deno run -A dev.ts",
+    "check": "deno publish --dry-run"
   }
 }

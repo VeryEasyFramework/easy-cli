@@ -4,6 +4,7 @@ import { type Char, keyMap, type KeyStroke } from "#/utils/keyMap.ts";
 import { camelToTitleCase } from "@vef/string-utils";
 import type { EasyCli, Theme } from "#/easyCli.ts";
 import { ClockElement } from "#/elements/clockElement.ts";
+import type { BasicBgColor, BasicFgColor } from "#/utils/colors.ts";
 
 export abstract class BaseView {
   engine!: RenderEngine;
@@ -20,7 +21,10 @@ export abstract class BaseView {
     return this.cli.theme;
   }
 
-  get themeStyle() {
+  get themeStyle(): {
+    color: BasicFgColor;
+    bgColor: BasicBgColor;
+  } {
     return {
       color: this.theme.primaryColor,
       bgColor: this.theme.backgroundColor,
@@ -36,7 +40,7 @@ export abstract class BaseView {
     }
     return 3;
   }
-  get menuTitle() {
+  get menuTitle(): string {
     return `${this.appName} - ${this.title}`;
   }
   constructor(
@@ -68,7 +72,7 @@ export abstract class BaseView {
     this.setup();
   }
 
-  private addListeners() {
+  private addListeners(): void {
     this.listener.doneActions.push(...this.doneActions);
 
     this.listener.charActions.push(...this.charActions);

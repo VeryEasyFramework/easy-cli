@@ -5,7 +5,7 @@ import { TaskElement } from "#/elements/taskElement.ts";
 export class OutputView extends BaseView {
   clock: ClockElement = new ClockElement();
 
-  tasks = [
+  tasks: TaskElement[] = [
     new TaskElement("Task 1", {
       style: "lineBounce",
     }),
