@@ -13,9 +13,9 @@ interface Task {
 
 interface AddTaskOptions {
   action: (callbacks: {
-    output: (data: string | string[]) => void;
+    output: (data: string | string[], replace?: boolean) => void;
     fail: () => void;
-    progress: (progress: number, total: number) => void;
+    progress: (progress: number, total: number, message: string) => void;
     success: () => void;
   }) => Promise<void> | void;
 }
@@ -55,13 +55,13 @@ export class TaskView extends BaseView {
       action: async () => {
         taskElement.run();
         await options?.action({
-          output: (data) => {
+          output: (data, replace) => {
             if (Array.isArray(data)) {
               for (const line of data) {
                 this.outputElement.addContent(line);
               }
             } else {
-              this.outputElement.addContent(data);
+              this.outputElement.addContent(data, replace);
             }
           },
           fail: () => {

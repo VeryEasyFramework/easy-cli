@@ -68,6 +68,7 @@ export class EasyCli {
   }
   addView(view: BaseView, key: string) {
     view.init(this, this.renderEngine, this.listener, this.appName);
+
     this.views[key] = view;
   }
 
