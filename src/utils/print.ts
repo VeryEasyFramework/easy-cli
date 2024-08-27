@@ -1,23 +1,45 @@
-import { colorMe, type ColorOptions } from "@vef/color-me";
-
-export type Color = keyof typeof colorMe;
+import {
+  BasicBgColor,
+  BasicFgColor,
+  ColorMe,
+  StyleOptions,
+} from "#/utils/colors.ts";
 
 const encoder = new TextEncoder();
 
-export function print(content: string, color?: Color, options?: ColorOptions) {
+export function print(content: string): void;
+export function print(content: string, options: StyleOptions): void;
+export function print(content: string, color: BasicFgColor): void;
+export function print(
+  content: string,
+  color: BasicFgColor,
+  options: StyleOptions,
+): void;
+
+export function print(
+  content: string,
+  colorOrOptions?: BasicFgColor | StyleOptions,
+  options?: StyleOptions,
+) {
   let output = content;
 
-  if (color) {
-    output = colorMe[color](content, options);
+  if (colorOrOptions && typeof colorOrOptions === "object") {
+    output = ColorMe.fromOptions(content, colorOrOptions);
   }
-  if (!color && options) {
-    output = colorMe.white(content, options);
+  if (colorOrOptions && typeof colorOrOptions === "string") {
+    output = ColorMe.fromOptions(content, {
+      color: colorOrOptions,
+      ...options,
+    });
+  }
+  if (!colorOrOptions && options) {
+    output = ColorMe.fromOptions(content, { color: "white", ...options });
   }
   Deno.stdout.write(encoder.encode(output));
 }
 
-export function println(content: string, color?: Color) {
-  console.log(colorMe[color || "white"](content));
+export function println(content: string, color?: BasicFgColor) {
+  console.log(ColorMe.fromOptions(content, { color: color || "white" }));
   // print(`${content}\n`, color);
 }
 
@@ -48,10 +70,13 @@ export function clearCurrentLine() {
 export function clearLine(line: number, options?: {
   start: number;
   end: number;
+  bgColor?: BasicBgColor;
 }) {
   goTo(line, options?.start || 0);
   if (options?.end) {
-    print(" ".repeat(options.end - options.start));
+    print(" ".repeat(options.end - options.start), {
+      bgColor: options.bgColor,
+    });
     return;
   }
   clearCurrentLine();
@@ -166,6 +191,54 @@ export const symbol = {
     verticalRight: "├",
     horizontalDown: "┬",
     horizontalUp: "┴",
+    double: {
+      topLeft: "╔",
+      topRight: "╗",
+      bottomLeft: "╚",
+      bottomRight: "╝",
+      vertical: "║",
+      horizontal: "═",
+      verticalLeft: "╣",
+      verticalRight: "╠",
+      horizontalDown: "╦",
+      horizontalUp: "╩",
+    },
+    doubleSingle: {
+      topLeft: "╓",
+      topRight: "╖",
+      bottomLeft: "╙",
+      bottomRight: "╜",
+      vertical: "║",
+      horizontal: "─",
+      verticalLeft: "╢",
+      verticalRight: "╟",
+      horizontalDown: "╥",
+      horizontalUp: "╨",
+    },
+    classic: {
+      topLeft: "+",
+      topRight: "+",
+      bottomLeft: "+",
+      bottomRight: "+",
+      vertical: "|",
+      horizontal: "-",
+      verticalLeft: "+",
+      verticalRight: "+",
+      horizontalDown: "+",
+      horizontalUp: "+",
+    },
+    thick: {
+      topLeft: "┏",
+      topRight: "┓",
+      bottomLeft: "┗",
+      bottomRight: "┛",
+      vertical: "┃",
+      horizontal: "━",
+      verticalLeft: "┫",
+      verticalRight: "┣",
+      horizontalDown: "┳",
+      horizontalUp: "┻",
+    },
   },
   arrows: {
     up: "↑",
@@ -206,5 +279,48 @@ export const symbol = {
     alt3: "❯❯❯",
     alt4: "❯❯❯❯",
     pipe: "│",
+  },
+  moon: {
+    new: "🌑",
+    waxingCrescent: "🌒",
+    firstQuarter: "🌓",
+    waxingGibbous: "🌔",
+    full: "🌕",
+    waningGibbous: "🌖",
+    lastQuarter: "🌗",
+    waningCrescent: "🌘",
+  },
+  braile: {
+    blank: "⠀",
+    dot: "⣿",
+    dot2: "⡷",
+    dot3: "⡯",
+    dot4: "⡏",
+    dot5: "⠟",
+    dot6: "⠻",
+    dot7: "⢹",
+    dot8: "⣱",
+    dot9: "⣾",
+    dot10: "⣽",
+    dot11: "⣻",
+    dot12: "⢿",
+    dot13: "⡿",
+    dot14: "⣟",
+    dot15: "⣯",
+
+    block: "⣤",
+    block2: "⣆",
+    block3: "⡆",
+    block4: "⠆",
+    block5: "⢆",
+    block6: "⣲",
+    block7: "⣴",
+    block8: "⣾",
+    block9: "⣷",
+    block10: "⣿",
+    block11: "⡿",
+    block12: "⣟",
+    block13: "⣯",
+    block14: "⣻",
   },
 };

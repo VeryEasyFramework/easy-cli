@@ -3,6 +3,7 @@
   "version": "0.1.16",
   "exports": "./mod.ts",
   "imports": {
+    "#/": "./src/",
     "@vef/color-me": "jsr:@vef/color-me@^1.0.2",
     "@vef/string-utils": "jsr:@vef/string-utils@^0.1.2"
   },
@@ -14,6 +15,7 @@
     ]
   },
   "tasks": {
-    "dev": "deno run --allow-all --watch dev.ts"
+    "dev": "deno run -A dev.ts",
+    "check": "deno publish --dry-run"
   }
 }

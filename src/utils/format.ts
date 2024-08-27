@@ -1,38 +1,59 @@
-import { colorMe, type ColorOptions } from "@vef/color-me";
-import type { Color } from "./print.ts";
+import { BasicFgColor, ColorMe, StyleOptions } from "#/utils/colors.ts";
 
 export function getConsoleWidth(): number {
   return Deno.consoleSize().columns;
 }
+export function getCharCount(content: string): number {
+  const bytes = new TextEncoder().encode(content);
+  let count = 0;
+  let inAnsi = false;
+  for (let i = 0; i < bytes.length; i++) {
+    if (inAnsi) {
+      if (bytes[i] == 109) {
+        inAnsi = false;
+      }
+      continue;
+    }
+    if (bytes[i] == 0x1b) {
+      inAnsi = true;
+      continue;
+    }
 
-export function getCenterOffset(content: string, width: number): number {
-  const controlCharacters = content.match(/\u001b\[[0-9;]*m/g) || [];
-  let controlCharactersLength = controlCharacters.join("").length;
+    if (bytes[i] >= 0x20 && bytes[i] <= 0x7e) {
+      count++;
+    }
 
-  if (controlCharactersLength < 0) {
-    controlCharactersLength = 0;
+    if (bytes[i] == 0xe2) {
+      // if (bytes[i + 1] == 0x80 && bytes[i + 2] == 0x99) {
+      count++;
+      i += 2;
+      continue;
+      // }
+    }
+
+    if (bytes[i] == 0xf0) {
+      count++;
+      i += 3;
+    }
   }
-  const contentLength = content.length - controlCharactersLength;
+
+  return count;
+}
+export function getCenterOffset(content: string, width: number): number {
+  const contentLength = getCharCount(content);
   const result = (width - contentLength) / 2;
   // round to the nearest whole number
-  return Math.round(result);
+  return Math.floor(result) + 1;
 }
 export function center(content: string, char?: string, options?: {
-  contentColor?: Color;
-  fillerColor?: Color;
-  color?: Color;
+  contentColor?: BasicFgColor;
+  fillerColor?: BasicFgColor;
+  color?: BasicFgColor;
 }): string {
   const repeatChar = char || " ";
   const width = getConsoleWidth();
 
-  const controlCharacters = content.match(/\u001b\[[0-9;]*m/g) || [];
-  let controlCharactersLength = controlCharacters.join("").length;
-
-  if (controlCharactersLength < 0) {
-    controlCharactersLength = 0;
-  }
-
-  const contentLength = content.length - controlCharactersLength;
+  const contentLength = getCharCount(content);
   let center = (width - contentLength - 2) / 2;
   if (center < 0) {
     center = 0;
@@ -41,26 +62,32 @@ export function center(content: string, char?: string, options?: {
     center,
   );
   if (options?.color) {
-    return colorMe[options.color](`${filler} ${content} ${filler}`);
+    return ColorMe.chain().content(filler).color(options.color).content(
+      ` ${content} `,
+    ).color(
+      options.color,
+    ).content(filler).end();
   }
   if (options?.contentColor) {
-    content = colorMe[options.contentColor](content);
+    content = ColorMe.standard().content(content).color(options.contentColor)
+      .format();
   }
   if (options?.fillerColor) {
-    filler = colorMe[options.fillerColor](filler);
+    filler = ColorMe.standard().content(filler).color(options.fillerColor)
+      .format();
   }
   return `${filler} ${content} ${filler}`;
 }
 
 export function fill(
   char: string,
-  options?: ColorOptions & { color: Color },
+  options?: StyleOptions,
 ): string {
   const width = getConsoleWidth();
   const line = char.repeat(width);
   if (options) {
     const color = options.color || "white";
-    return colorMe[color](line, options);
+    return ColorMe.fromOptions(line, { color, ...options });
   }
   return line;
 }

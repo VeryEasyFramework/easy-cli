@@ -1,61 +1,103 @@
-import { colorMe } from "@vef/color-me";
+import { RenderEngine } from "./renderEngine/render.ts";
+import { InputListener } from "#/utils/inputListener.ts";
+import type { BaseView } from "#/views/baseView.ts";
+import type { BasicBgColor, BasicFgColor } from "#/utils/colors.ts";
+import { clearScreen, goToTop } from "#/utils/print.ts";
 
-import { CliMenu } from "./cliMenu.ts";
-import type { ActionMenuItem, SubMenuItem } from "./types.ts";
-
-async function asyncPause(ms: number) {
-  await new Promise((resolve) => setTimeout(resolve, ms));
+interface EasyCliOptions {
+  appName?: string;
+  description?: string;
+  theme?: Partial<Theme>;
+  engine?: {
+    refreshRate?: number;
+  };
 }
 
-/**
- * EasyCli is an easy-to-use CLI builder for interactive command-line applications
- */
+export type LineStyle =
+  | "standard"
+  | "double"
+  | "thick"
+  | "dotted"
+  | "block"
+  | "doubleSingle";
+export interface Theme {
+  backgroundColor: BasicBgColor;
+  primaryColor: BasicFgColor;
+  lineStyle: LineStyle;
+}
+
+interface EasyAbortSignal extends AbortSignal {
+  reason: {
+    name: string;
+    message: string;
+  };
+}
+
+export const defaultTheme: Theme = {
+  lineStyle: "thick",
+  primaryColor: "brightCyan",
+  backgroundColor: "bgBlack",
+};
 export class EasyCli {
-  private mainMenu = new CliMenu("Main Menu");
+  appName: string;
+  theme: Theme;
+  private renderEngine: RenderEngine;
+  private listener: InputListener;
+  private views: Record<string, BaseView> = {} as Record<string, BaseView>;
+  abortController: AbortController;
+  abortSignal: EasyAbortSignal;
 
-  constructor(title?: string) {
-    this.mainMenu.menuName = title || "Main Menu";
-
-    this.mainMenu.onBack({
-      title: "Exit",
-      description: "Quit the application",
-      action: () => {
-        Deno.exit();
-      },
+  private currentView?: BaseView;
+  constructor(options?: EasyCliOptions) {
+    this.renderEngine = new RenderEngine({
+      theme: options?.theme,
+      refreshRate: options?.engine?.refreshRate,
     });
+    this.theme = {
+      ...defaultTheme,
+      ...options?.theme,
+    };
+    this.abortController = new AbortController();
+
+    this.abortSignal = this.abortController.signal;
+    this.listener = new InputListener({
+      abortController: this.abortController,
+      hideCursor: true,
+    });
+    this.appName = options?.appName || "Easy CLI";
+  }
+  addView(view: BaseView, key: string) {
+    view.init(this, this.renderEngine, this.listener, this.appName);
+    this.views[key] = view;
   }
 
-  /**
-   * Add a menu item to the main menu
-   */
-  addMenuItem(menuItem: ActionMenuItem) {
-    this.mainMenu.addMenuItem(menuItem);
+  changeView(key: string) {
+    this.currentView = this.views[key];
+    this.currentView.show();
   }
 
-  /**
-   * Add a submenu to the main menu
-   */
-  addSubMenu(subMenu: SubMenuItem) {
-    this.mainMenu.addSubMenu(subMenu);
+  stop() {
+    this.renderEngine.stop();
+    this.listener.stop();
   }
-
-  /**
-   * Run the CLI
-   */
-  public async run(): Promise<void> {
-    if (!this.mainMenu.menuItems.length) {
-      console.error(
-        colorMe.red("Oops! You need to add at least one menu item. Exiting..."),
-      );
+  run() {
+    this.abortSignal.addEventListener("abort", () => {
+      this.stop();
+      clearScreen();
+      goToTop();
+      switch (this.abortSignal.reason.name) {
+        case "HardInterrupt":
+          console.log("Exiting due to Ctrl+C");
+          break;
+        case "SoftInterrupt":
+          console.log("Exiting due to Escape");
+          break;
+        default:
+          console.log("Exiting due to unknown reason");
+      }
       Deno.exit();
-    }
-    try {
-      await asyncPause(500);
-      await this.mainMenu.show();
-    } catch (e) {
-      console.error(colorMe.red(e.message));
-      await asyncPause(2000);
-      await this.run();
-    }
+    });
+    this.listener.listen();
+    this.renderEngine.run();
   }
 }

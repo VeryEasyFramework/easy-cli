@@ -1,5 +1,4 @@
 import { colorMe } from "@vef/color-me";
-import { CLIBase } from "./cliBase.ts";
 
 import { symbols } from "./utils/print.ts";
 
@@ -220,5 +219,3 @@ class SearchableList extends CLIBase<string> {
     });
   }
 }
-
-export { SearchableList };
