@@ -79,7 +79,7 @@ export abstract class BaseElement {
       if (typeof content === "string") {
         content = [content];
       }
-      height = options?.height || content.length;
+      height = height || content.length;
       width = options?.width ||
         Math.max(...content.map((c) => getCharCount(c))) + 2;
     }
@@ -114,12 +114,20 @@ export abstract class BaseElement {
             break;
         }
 
-        const rowContent = rawContent.padStart(
-          offset + getCharCount(rawContent),
-          " ",
-        ).padEnd(width, " ");
-        rows.push(`${vertical}${this.colorBgTheme(rowContent)}${vertical}`);
+        const startPadding = this.colorBgTheme(" ".repeat(offset));
+        const charCount = getCharCount(rawContent);
+        const endPadding = this.colorBgTheme(
+          " ".repeat(width - charCount - offset),
+        );
+        const rowContent = `${startPadding}${
+          this.colorBgTheme(rawContent)
+        }${endPadding}`;
+        rows.push(`${vertical}${rowContent}${vertical}`);
+        continue;
       }
+      rows.push(
+        `${vertical}${this.colorBgTheme(" ".repeat(width))}${vertical}`,
+      );
     }
     rows.push(bottom);
     return rows;

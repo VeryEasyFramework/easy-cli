@@ -43,7 +43,7 @@ export function getCenterOffset(content: string, width: number): number {
   const contentLength = getCharCount(content);
   const result = (width - contentLength) / 2;
   // round to the nearest whole number
-  return Math.round(result);
+  return Math.floor(result) + 1;
 }
 export function center(content: string, char?: string, options?: {
   contentColor?: BasicFgColor;

@@ -27,7 +27,7 @@ import { InputListener } from "#/utils/inputListener.ts";
 export class RenderEngine {
   pixels: Array<Array<string>> = [];
 
-  refreshRate = 50;
+  refreshRate = 30;
   contentPaddingTop = 3;
   contentPadding = 2;
   _height = 20;

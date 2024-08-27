@@ -15,16 +15,19 @@ interface AddTaskOptions {
   action: (callbacks: {
     output: (data: string | string[]) => void;
     fail: () => void;
-    progress: (progress: number) => void;
+    progress: (progress: number, total: number) => void;
     success: () => void;
   }) => Promise<void> | void;
 }
 export class TaskView extends BaseView {
   output: string[] = [];
   outputElement = new OutputElement();
+  status: "pending" | "running" | "done" = "pending";
 
   tasks: Task[] = [];
-  doneActions: Array<() => void> = [];
+  doneActions: Array<() => Promise<void> | void> = [];
+
+  messageElement: string = "";
 
   startActions: Array<() => Promise<void> | void> = [];
 
@@ -64,7 +67,7 @@ export class TaskView extends BaseView {
           fail: () => {
             taskElement.fail();
           },
-          progress: (progress: number) => {
+          progress: (progress: number, total: number) => {
             taskElement.progress = progress;
           },
           success: () => {
@@ -82,39 +85,46 @@ export class TaskView extends BaseView {
     for (const task of this.tasks) {
       await task.action();
     }
+    this.done();
   }
   onDone(callback: () => void) {
     this.doneActions.push(callback);
   }
   scroll: number = 0;
   done() {
-    this.engine.createElement("All done! Press 'Enter' to continue...", {
-      row: this.startRow + this.tasks.length + 1,
-      align: "center",
-      style: {
-        color: "brightMagenta",
-        bold: true,
-      },
-    });
-    this.listener.on("down", () => {
-      this.scroll++;
-      this.outputElement.scrollDown();
-    });
-    this.listener.on("up", () => {
-      this.scroll--;
-      this.outputElement.scrollUp();
-    });
+    this.status = "done";
+    this.updateMessage("All done! press enter to continue");
 
-    this.listener.on("enter", () => {
-      this.doneActions.forEach((action) => {
-        action();
-      });
-    });
+    this.outputElement.scroll = 0;
   }
 
   calculateSize() {
   }
   setup(): void {
+    this.onInput("special", "up", () => {
+      this.outputElement.scrollUp();
+    });
+    this.onInput("special", "down", () => {
+      this.outputElement.scrollDown();
+    });
+    this.onInput("special", "enter", () => {
+      switch (this.status) {
+        case "pending":
+          this.status = "running";
+          this.updateMessage("Running tasks");
+          this.start();
+          break;
+        case "done":
+          if (!this.doneActions.length) {
+            this.cli.stop();
+            Deno.exit(0);
+          }
+          this.doneActions.forEach(async (action) => {
+            await action();
+          });
+          break;
+      }
+    });
   }
 
   addOutputElement() {
@@ -131,6 +141,12 @@ export class TaskView extends BaseView {
       justify: "center",
     });
   }
+
+  updateMessage(content: string) {
+    this.engine.updateElement(this.messageElement, {
+      content,
+    });
+  }
   build() {
     this.calculateSize();
 
@@ -139,6 +155,15 @@ export class TaskView extends BaseView {
         row: this.startRow + index,
       });
     });
+    this.messageElement = this.engine.createElement("", {
+      row: this.startRow + this.tasks.length + 1,
+      align: "center",
+      style: {
+        color: "brightMagenta",
+        bold: true,
+      },
+    });
     this.addOutputElement();
+    this.updateMessage("Press enter to start");
   }
 }

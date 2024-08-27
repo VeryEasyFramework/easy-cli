@@ -123,20 +123,22 @@ export class MenuView extends BaseView {
       ? this.exitAction
       : this.actions[prevIndex];
 
-    this.engine.updateElement(prevAction.id, {
-      content: `  ${prevAction.name}`,
-      style: {
-        color: "brightYellow",
-        bold: true,
-      },
-    });
-    this.engine.updateElement(prevAction.descriptionId, {
-      style: {
-        color: "white",
-        dim: true,
-        italic: true,
-      },
-    });
+    if (prevAction) {
+      this.engine.updateElement(prevAction.id, {
+        content: `  ${prevAction.name}`,
+        style: {
+          color: "brightYellow",
+          bold: true,
+        },
+      });
+      this.engine.updateElement(prevAction.descriptionId, {
+        style: {
+          color: "white",
+          dim: true,
+          italic: true,
+        },
+      });
+    }
     this.engine.updateElement(action.id, {
       content: `${arrow} ${action.name}`,
       style: {
