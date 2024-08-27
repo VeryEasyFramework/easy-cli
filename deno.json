@@ -1,21 +1,21 @@
 {
   "name": "@vef/easy-cli",
-  "version": "0.1.16",
+  "version": "0.2.0",
   "exports": "./mod.ts",
   "imports": {
     "#/": "./src/",
-    "@vef/color-me": "jsr:@vef/color-me@^1.0.2",
-    "@vef/string-utils": "jsr:@vef/string-utils@^0.1.2"
+    "@vef/string-utils": "jsr:@vef/string-utils@^0.1.5"
   },
   "publish": {
     "exclude": [
-      "dev.ts",
+      "dev",
       ".github",
       ".vscode"
     ]
   },
   "tasks": {
-    "dev": "deno run -A dev.ts",
-    "check": "deno publish --dry-run"
+    "dev": "cd dev && deno run -A main.ts",
+    "check": "deno publish --dry-run",
+    "update": "deno add @vef/string-utils"
   }
 }
