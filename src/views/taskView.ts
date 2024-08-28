@@ -122,11 +122,19 @@ export class TaskView extends BaseView {
           this.doneActions.forEach(async (action) => {
             await action();
           });
+          this.reset();
           break;
       }
     });
   }
-
+  reset() {
+    this.status = "pending";
+    this.tasks.forEach((task) => {
+      task.element.reset();
+    });
+    this.outputElement.contentRows = [];
+    this.updateMessage("");
+  }
   addOutputElement() {
     this.outputElement.width = (): number => {
       return this.engine.currentWidth -
