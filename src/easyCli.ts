@@ -3,6 +3,7 @@ import { InputListener } from "#/utils/inputListener.ts";
 import type { BaseView } from "#/views/baseView.ts";
 import type { BasicBgColor, BasicFgColor } from "#/utils/colors.ts";
 import { clearScreen, goToTop } from "#/utils/print.ts";
+import { MenuView } from "../mod.ts";
 
 interface EasyCliOptions {
   appName?: string;
@@ -11,6 +12,7 @@ interface EasyCliOptions {
   engine?: {
     refreshRate?: number;
   };
+  mainMenu?: BaseView;
 }
 
 export type LineStyle =
@@ -44,6 +46,7 @@ export class EasyCli {
   private renderEngine: RenderEngine;
   private listener: InputListener;
   private views: Record<string, BaseView> = {} as Record<string, BaseView>;
+  mainMenu?: BaseView;
   abortController: AbortController;
   abortSignal: EasyAbortSignal;
 
@@ -65,6 +68,7 @@ export class EasyCli {
       hideCursor: true,
     });
     this.appName = options?.appName || "Easy CLI";
+    this.mainMenu = options?.mainMenu || new MenuView();
   }
   addView(view: BaseView, key: string) {
     view.init(this, this.renderEngine, this.listener, this.appName);
