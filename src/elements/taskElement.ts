@@ -117,6 +117,10 @@ export class TaskElement extends BaseElement {
   done() {
     this._status = "done";
   }
+
+  reset() {
+    this._status = "pending";
+  }
   fail() {
     this._status = "failed";
   }
