@@ -109,7 +109,11 @@ export class RenderEngine {
     columns: number;
     rows: number;
   } {
-    return Deno.consoleSize();
+    try {
+      return Deno.consoleSize();
+    } catch (_e) {
+      return { columns: 80, rows: 20 };
+    }
   }
   justifyContent(row: number, justify: Justify): void {
     const rowElements = this.rows.filter((r) => r.line === row);
