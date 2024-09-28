@@ -20,6 +20,9 @@ export class MenuView extends BaseView {
   private currentSelection = 1;
   private maxActionCharLength: number = 0;
   private maxDescriptionCharLength: number = 0;
+  get actionStartRow() {
+    return this.startRow + 2;
+  }
   actions: Action[] = [];
 
   private get instructions(): string {
@@ -158,7 +161,7 @@ export class MenuView extends BaseView {
     return this.actions.length + 1;
   }
   setup(): void {
-    this.onInput("special", "up", () => {
+    const up = () => {
       const prevAction = this.currentSelection - 1;
       this.currentSelection--;
       if (this.currentSelection < 1) {
@@ -166,9 +169,9 @@ export class MenuView extends BaseView {
       }
       const action = this.currentSelection - 1;
       this.setActiveItem(action, prevAction);
-    });
+    };
 
-    this.onInput("special", "down", () => {
+    const down = () => {
       const prevAction = this.currentSelection - 1;
       this.currentSelection++;
       if (this.currentSelection > this.menuLength) {
@@ -176,16 +179,52 @@ export class MenuView extends BaseView {
       }
       const action = this.currentSelection - 1;
       this.setActiveItem(action, prevAction);
-    });
-
-    this.onInput("special", "enter", async () => {
+    };
+    const select = async () => {
       const action = this.currentSelection - 1;
       if (action === this.menuLength - 1) {
         await this.exitAction.action();
       } else {
         await this.actions[action].action();
       }
+    };
+    this.onInput("special", "up", up);
+    this.onMouseEvent((event) => {
+      switch (event.event) {
+        case "scrollDown":
+          down();
+          break;
+        case "scrollUp":
+          up();
+          break;
+        case "leftDown": {
+          const selectedRow = event.position.y - this.actionStartRow - 2;
+          if (selectedRow < 1 || selectedRow > this.actions.length + 1) {
+            return;
+          }
+          if (selectedRow == this.currentSelection) {
+            select();
+            return;
+          }
+          if (selectedRow > this.currentSelection) {
+            while (selectedRow > this.currentSelection) {
+              down();
+            }
+          }
+          if (selectedRow < this.currentSelection) {
+            while (selectedRow < this.currentSelection) {
+              up();
+            }
+          }
+
+          break;
+        }
+      }
     });
+
+    this.onInput("special", "down", down);
+
+    this.onInput("special", "enter", select);
   }
   build() {
     this.currentSelection = 1;

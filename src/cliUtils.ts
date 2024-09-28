@@ -13,12 +13,43 @@ const keyMap = {
   ctrlU: "\x15",
 };
 
+const mouseMap = {
+  x10: "\x1B[?9",
+  vt200: "\x1B[?1000",
+  vt200Highlight: "\x1B[?1001",
+  btnEventMouse: "\x1B[?1002",
+  anyEventMouse: "\x1B[?1003",
+  focusEventMouse: "\x1B[?1004",
+  extendModeMouse: "\x1B[?1005",
+  sgrMouse: "\x1B[?1006",
+  altScroll: "\x1B[?1007",
+  urxvtMouse: "\x1B[?1015",
+  setPixelPos: "\x1B[?1016",
+};
+
+export function enableMouse() {
+  console.log(`${mouseMap.vt200}h`);
+  // console.log(`${mouseMap.btnEventMouse}h`);
+}
+
+export function disableMouse() {
+  console.log(`${mouseMap.vt200}l`);
+  // console.log(`${mouseMap.btnEventMouse}l`);
+}
+
 function hideCursor() {
   console.log("\x1B[?25l");
 }
 
 function showCursor() {
   console.log("\x1B[?25h");
+}
+
+export function alternateScreen() {
+  console.log("\x1B[?1049h");
+}
+export function restoreScreen() {
+  console.log("\x1B[?1049l");
 }
 async function navigateList(options: {
   currentIndex: number;
