@@ -20,7 +20,7 @@ export class MenuView extends BaseView {
   private currentSelection = 1;
   private maxActionCharLength: number = 0;
   private maxDescriptionCharLength: number = 0;
-  get actionStartRow() {
+  get actionStartRow(): number {
     return this.startRow + 2;
   }
   actions: Action[] = [];
