@@ -87,6 +87,7 @@ export class InputListener {
     this.charActions = [];
     this.lineActions = [];
     this.doneActions = [];
+    this.mouseActions = [];
   }
   reset() {
     this.lineBuffer = "";

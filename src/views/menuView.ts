@@ -189,7 +189,8 @@ export class MenuView extends BaseView {
       }
     };
     this.onInput("special", "up", up);
-    this.onMouseEvent((event) => {
+    let eventCount = 0;
+    this.onMouseEvent(async (event) => {
       switch (event.event) {
         case "scrollDown":
           down();
@@ -198,27 +199,34 @@ export class MenuView extends BaseView {
           up();
           break;
         case "leftDown": {
+          eventCount++;
           const selectedRow = event.position.y - this.actionStartRow - 2;
+
           if (selectedRow < 1 || selectedRow > this.actions.length + 1) {
-            return;
+            break;
           }
           if (selectedRow == this.currentSelection) {
-            select();
-            return;
+            await select();
+            break;
           }
           if (selectedRow > this.currentSelection) {
             while (selectedRow > this.currentSelection) {
               down();
             }
+            break;
           }
           if (selectedRow < this.currentSelection) {
             while (selectedRow < this.currentSelection) {
               up();
             }
+            break;
           }
 
           break;
         }
+
+        default:
+          break;
       }
     });
 
