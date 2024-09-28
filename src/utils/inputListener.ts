@@ -1,5 +1,11 @@
-import { hideCursor, showCursor } from "../cliUtils.ts";
-import { Char, keyMap, type KeyStroke } from "./keyMap.ts";
+import {
+  disableMouse,
+  enableMouse,
+  hideCursor,
+  showCursor,
+} from "../cliUtils.ts";
+import { Char, keyMap, type KeyStroke, mouseMap } from "./keyMap.ts";
+import { isMouseEvent, MouseEvent, parseMouseEvent } from "#/utils/mouse.ts";
 import { println } from "./print.ts";
 
 export class InputListener {
@@ -10,6 +16,7 @@ export class InputListener {
   keyActions: Record<string, Array<() => void>> = {};
   charActions: Array<(char: Char) => void> = [];
   lineActions: Array<(line: string) => void> = [];
+  mouseActions: Array<(event: MouseEvent) => void> = [];
   doneActions: Array<() => void> = [];
 
   lineBuffer: string = "";
@@ -38,6 +45,7 @@ export class InputListener {
 
     this.input.releaseLock();
     showCursor();
+    disableMouse();
     this.done = true;
     this.doneActions.forEach((action) => {
       action();
@@ -101,7 +109,9 @@ export class InputListener {
   onDone(action: () => void) {
     this.doneActions.push(action);
   }
-
+  onMouseEvent(action: (event: MouseEvent) => void) {
+    this.mouseActions.push(action);
+  }
   private async readInput() {
     if (!this.input) {
       return;
@@ -115,7 +125,12 @@ export class InputListener {
       return;
     }
     const key = this.decode(value);
-
+    if (isMouseEvent(value)) {
+      const mouseEvent = parseMouseEvent(value.slice(3));
+      for (const action of this.mouseActions) {
+        action(mouseEvent);
+      }
+    }
     if (key in this.keyActions) {
       for (const action of this.keyActions[key]) {
         action();
@@ -138,6 +153,7 @@ export class InputListener {
     if (this.hideCursor) {
       hideCursor();
     }
+    enableMouse();
     try {
       Deno.stdin.setRaw(true);
       this.input = Deno.stdin.readable.getReader();

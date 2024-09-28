@@ -1,4 +1,11 @@
-import { asyncPause, hideCursor } from "#/cliUtils.ts";
+import {
+  alternateScreen,
+  asyncPause,
+  disableMouse,
+  enableMouse,
+  hideCursor,
+  restoreScreen,
+} from "#/cliUtils.ts";
 import {
   clearLine,
   clearScreen,
@@ -8,20 +15,20 @@ import {
   showCursor,
 } from "#/utils/print.ts";
 
-import { getCenterOffset, getCharCount } from "../utils/format.ts";
+import { getCenterOffset, getCharCount } from "#/utils/format.ts";
 import { defaultTheme, type LineStyle, type Theme } from "#/easyCli.ts";
 import { box } from "#/utils/box.ts";
 import type { StyleOptions } from "#/utils/colors.ts";
 import { Element } from "#/renderEngine/element.ts";
 import { Row } from "#/renderEngine/row.ts";
-import {
+import type {
   CreateElementOptions,
   ElementContent,
   ElementID,
   HorizontalAlignment,
   Justify,
 } from "#/renderEngine/renderEngineTypes.ts";
-import { EasyElement } from "#/elements/baseElement.ts";
+import type { EasyElement } from "#/elements/baseElement.ts";
 import { InputListener } from "#/utils/inputListener.ts";
 
 export class RenderEngine {
@@ -494,7 +501,10 @@ export class RenderEngine {
   async run(): Promise<void> {
     await asyncPause(500);
     this.startTime = new Date().getTime();
-    hideCursor();
+
+    // hideCursor();
+    // alternateScreen();
+    enableMouse();
     this.clearScreen();
 
     while (!this._finished) {
@@ -504,5 +514,7 @@ export class RenderEngine {
     clearScreen();
     goToTop();
     showCursor();
+    disableMouse();
+    // restoreScreen();
   }
 }

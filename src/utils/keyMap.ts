@@ -12,7 +12,9 @@ export const keyMap = {
   ctrlI: "\x09",
   ctrlU: "\x15",
 };
-
+export const mouseMap = {
+  mouse: "\x1b[M",
+};
 export type KeyMap = typeof keyMap;
 
 type ControlKeys = keyof Pick<KeyMap, "ctrlC" | "ctrlB" | "ctrlI" | "ctrlU">;

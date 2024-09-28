@@ -5,6 +5,7 @@ import { camelToTitleCase } from "@vef/string-utils";
 import type { EasyCli, Theme } from "#/easyCli.ts";
 import { ClockElement } from "#/elements/clockElement.ts";
 import type { BasicBgColor, BasicFgColor } from "#/utils/colors.ts";
+import { MouseEvent } from "#/utils/mouse.ts";
 
 export abstract class BaseView {
   engine!: RenderEngine;
@@ -14,6 +15,7 @@ export abstract class BaseView {
   keyActions: Record<string, Array<() => void>> = {};
   charActions: Array<(char: Char) => void> = [];
   lineActions: Array<(line: string) => void> = [];
+  mouseActions: Array<(event: MouseEvent) => void> = [];
   doneActions: Array<() => void> = [];
 
   cli!: EasyCli;
@@ -78,6 +80,8 @@ export abstract class BaseView {
     this.listener.charActions.push(...this.charActions);
 
     this.listener.lineActions.push(...this.lineActions);
+
+    this.listener.mouseActions.push(...this.mouseActions);
 
     for (const [key, actions] of Object.entries(this.keyActions)) {
       actions.forEach((action) => {
@@ -162,6 +166,9 @@ export abstract class BaseView {
         this.lineActions.push(keyOrCallback as (line: string) => void);
         break;
     }
+  }
+  onMouseEvent(callback: (event: MouseEvent) => void) {
+    this.mouseActions.push(callback);
   }
   show() {
     this.engine.reset();
