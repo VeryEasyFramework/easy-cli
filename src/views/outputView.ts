@@ -3,7 +3,7 @@ import { ClockElement } from "#/elements/clockElement.ts";
 import { TaskElement } from "#/elements/taskElement.ts";
 
 export class OutputView extends BaseView {
-  clock: ClockElement = new ClockElement();
+  override clock: ClockElement = new ClockElement();
 
   tasks: TaskElement[] = [
     new TaskElement("Task 1", {

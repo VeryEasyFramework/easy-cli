@@ -25,7 +25,7 @@ export class TaskView extends BaseView {
   status: "pending" | "running" | "done" = "pending";
 
   tasks: Task[] = [];
-  doneActions: Array<() => Promise<void> | void> = [];
+  override doneActions: Array<() => Promise<void> | void> = [];
 
   messageElement: string = "";
 
