@@ -5,7 +5,7 @@ import { camelToTitleCase } from "@vef/string-utils";
 import type { EasyCli, Theme } from "#/easyCli.ts";
 import { ClockElement } from "#/elements/clockElement.ts";
 import type { BasicBgColor, BasicFgColor } from "#/utils/colors.ts";
-import { MouseEvent } from "#/utils/mouse.ts";
+import type { MouseEvent } from "#/utils/mouse.ts";
 
 export abstract class BaseView {
   engine!: RenderEngine;

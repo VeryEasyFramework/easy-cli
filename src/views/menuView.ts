@@ -1,7 +1,7 @@
 import { BaseView } from "#/views/baseView.ts";
 import { symbol, symbols } from "#/utils/print.ts";
 import { box } from "#/utils/box.ts";
-import { ColorMe, StyleOptions } from "#/utils/colors.ts";
+import { ColorMe, type StyleOptions } from "#/utils/colors.ts";
 interface Action {
   name: string;
   description?: string;

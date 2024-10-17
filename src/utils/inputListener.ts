@@ -3,10 +3,14 @@ import {
   enableMouse,
   hideCursor,
   showCursor,
-} from "../cliUtils.ts";
-import { Char, keyMap, type KeyStroke, mouseMap } from "./keyMap.ts";
-import { isMouseEvent, MouseEvent, parseMouseEvent } from "#/utils/mouse.ts";
-import { println } from "./print.ts";
+} from "#/cliUtils.ts";
+import { type Char, keyMap, type KeyStroke } from "./keyMap.ts";
+import {
+  isMouseEvent,
+  type MouseEvent,
+  parseMouseEvent,
+} from "#/utils/mouse.ts";
+import { println } from "#/utils/print.ts";
 
 export class InputListener {
   hideCursor: boolean = true;

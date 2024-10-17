@@ -1,8 +1,8 @@
 import {
-  BasicBgColor,
-  BasicFgColor,
+  type BasicBgColor,
+  type BasicFgColor,
   ColorMe,
-  StyleOptions,
+  type StyleOptions,
 } from "#/utils/colors.ts";
 
 const encoder = new TextEncoder();

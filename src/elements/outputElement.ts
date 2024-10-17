@@ -1,5 +1,5 @@
 import { BaseElement } from "#/elements/baseElement.ts";
-import { box } from "#/utils/box.ts";
+import type { box } from "#/utils/box.ts";
 import { Animation } from "#/animation/animate.ts";
 export class OutputElement extends BaseElement {
   addContent(content: string, replace?: boolean): void {

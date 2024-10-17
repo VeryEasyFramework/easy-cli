@@ -1,11 +1,4 @@
-import {
-  alternateScreen,
-  asyncPause,
-  disableMouse,
-  enableMouse,
-  hideCursor,
-  restoreScreen,
-} from "#/cliUtils.ts";
+import { asyncPause, disableMouse, enableMouse } from "#/cliUtils.ts";
 import {
   clearLine,
   clearScreen,
@@ -490,6 +483,8 @@ export class RenderEngine {
     this.clearUnpopulatedRows();
   }
 
+  onStop = (): void => {};
+
   reset(): void {
     this.rows = [];
     this.rawElements = [];
@@ -515,6 +510,7 @@ export class RenderEngine {
     goToTop();
     showCursor();
     disableMouse();
+    this.onStop();
     // restoreScreen();
   }
 }

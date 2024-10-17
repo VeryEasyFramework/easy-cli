@@ -1,10 +1,10 @@
 import { defaultTheme, type Theme } from "#/easyCli.ts";
-import { RenderEngine } from "#/renderEngine/render.ts";
+import type { RenderEngine } from "#/renderEngine/render.ts";
 import { box } from "#/utils/box.ts";
 import { ColorMe } from "../../mod.ts";
 import { getCharCount } from "#/utils/format.ts";
-import { HorizontalAlignment } from "#/renderEngine/renderEngineTypes.ts";
-import { InputListener } from "#/utils/inputListener.ts";
+import type { HorizontalAlignment } from "#/renderEngine/renderEngineTypes.ts";
+import type { InputListener } from "#/utils/inputListener.ts";
 
 type TypeOrFunc<T> = T | (() => T);
 function typeOrFunction<T extends string | number>(

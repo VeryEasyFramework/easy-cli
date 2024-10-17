@@ -1,4 +1,4 @@
-import { StyleOptions } from "#/utils/colors.ts";
+import type { StyleOptions } from "#/utils/colors.ts";
 
 export type HorizontalAlignment =
   | "start"

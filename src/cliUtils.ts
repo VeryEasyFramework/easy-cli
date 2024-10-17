@@ -135,7 +135,7 @@ export function listenForInput(callback: (key: string) => void) {
   hideCursor();
   Deno.stdin.setRaw(true);
   const input = Deno.stdin.readable.getReader();
-  input.read().then(async function processInput({ value, done }) {
+  input.read().then(function processInput({ value, done }) {
     if (done) {
       return;
     }

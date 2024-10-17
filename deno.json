@@ -1,6 +1,6 @@
 {
   "name": "@vef/easy-cli",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "exports": "./mod.ts",
   "imports": {
     "#/": "./src/",
@@ -12,6 +12,11 @@
       ".github",
       ".vscode"
     ]
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-unused-vars", "no-explicit-any"]
+    }
   },
   "tasks": {
     "dev": "cd dev && deno run -A main.ts",

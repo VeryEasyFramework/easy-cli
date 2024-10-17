@@ -1,8 +1,8 @@
 import { BaseElement } from "#/elements/baseElement.ts";
 import { Animation } from "#/animation/animate.ts";
 import { ColorMe } from "../../mod.ts";
-import { symbol, symbols } from "#/utils/print.ts";
-import { ColorRGB } from "#/utils/colors.ts";
+import { symbol, type symbols } from "#/utils/print.ts";
+import type { ColorRGB } from "#/utils/colors.ts";
 
 export class AnimationElement extends BaseElement {
   animation!: Animation;
@@ -166,7 +166,7 @@ export class AnimationElement extends BaseElement {
 
   startTime = 0;
 
-  render(elapsedTime: number, diff: number): string | string[] {
+  render(elapsedTime: number, _diff: number): string | string[] {
     if (this.startTime === 0) {
       this.startTime = elapsedTime;
     }

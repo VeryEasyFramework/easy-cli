@@ -1,5 +1,5 @@
 import { BaseView } from "#/views/baseView.ts";
-import { Animation } from "#/animation/animate.ts";
+import type { Animation } from "#/animation/animate.ts";
 import { AnimationElement } from "#/elements/animationElement.ts";
 
 export class AnimationView extends BaseView {

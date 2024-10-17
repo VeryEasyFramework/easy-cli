@@ -1,4 +1,4 @@
-import { BasicFgColor, ColorMe, StyleOptions } from "#/utils/colors.ts";
+import { type BasicFgColor, ColorMe, type StyleOptions } from "#/utils/colors.ts";
 
 export function getConsoleWidth(): number {
   return Deno.consoleSize().columns;

@@ -1,4 +1,4 @@
-import { LineStyle } from "#/easyCli.ts";
+import type { LineStyle } from "#/easyCli.ts";
 
 interface BoxLine {
   horizontal: string;
