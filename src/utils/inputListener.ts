@@ -14,6 +14,7 @@ import { println } from "#/utils/print.ts";
 
 export class InputListener {
   hideCursor: boolean = true;
+  captureMouse: boolean = true;
   decoder: TextDecoder = new TextDecoder();
   abortController: AbortController;
 
@@ -34,9 +35,13 @@ export class InputListener {
   constructor(options?: {
     hideCursor?: boolean;
     abortController?: AbortController;
+    captureMouse?: boolean;
   }) {
     if (options?.hideCursor === false) {
       this.hideCursor = false;
+    }
+    if (options?.captureMouse === false) {
+      this.captureMouse = false;
     }
     this.abortController = options?.abortController || new AbortController();
     this.setUpListeners();
@@ -158,7 +163,9 @@ export class InputListener {
     if (this.hideCursor) {
       hideCursor();
     }
-    enableMouse();
+    if (this.captureMouse) {
+      enableMouse();
+    }
     try {
       Deno.stdin.setRaw(true);
       this.input = Deno.stdin.readable.getReader();
